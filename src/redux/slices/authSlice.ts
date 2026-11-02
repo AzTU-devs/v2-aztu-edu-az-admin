@@ -55,9 +55,8 @@ const initialState: AuthState = {
   is_super_admin: false,
   is_active: false,
   last_login_at: null,
-  // Fail safe: assume the permissive mode until /me says otherwise, so a session
-  // that never reached /me cannot bounce an admin off every screen.
-  enforcement_mode: 'audit',
+  // Deny missing permissions unless the authenticated server explicitly says otherwise.
+  enforcement_mode: 'enforce',
 };
 
 /**
@@ -107,7 +106,7 @@ const authSlice = createSlice({
       state.role = me.role;
       state.is_super_admin = me.is_super_admin;
       state.permissions = me.permissions ?? [];
-      state.enforcement_mode = me.enforcement_mode ?? 'audit';
+      state.enforcement_mode = me.enforcement_mode ?? 'enforce';
     },
 
     logout: () => initialState,

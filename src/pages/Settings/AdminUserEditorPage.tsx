@@ -110,7 +110,7 @@ export default function AdminUserEditorPage() {
   const validate = (): boolean => {
     const next: Partial<Record<keyof AdminUserFormValues, string>> = {};
     if (!form.username.trim()) next.username = "İstifadəçi adı tələb olunur";
-    if (isNew && form.password.length < 8) next.password = "Şifrə ən azı 8 simvol olmalıdır";
+    if (isNew && form.password.length < 14) next.password = "Şifrə ən azı 14 simvol olmalıdır";
     if (form.role_id === null) next.role_id = "Rol seçmək lazımdır";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -195,10 +195,10 @@ export default function AdminUserEditorPage() {
     const { value, isConfirmed } = await Swal.fire({
       title: "Yeni şifrə təyin et",
       input: "password",
-      inputPlaceholder: "Ən azı 8 simvol",
+      inputPlaceholder: "Ən azı 14 simvol",
       inputAttributes: { autocomplete: "new-password" },
       inputValidator: (input) =>
-        !input || input.length < 8 ? "Şifrə ən azı 8 simvol olmalıdır" : null,
+        !input || input.length < 14 ? "Şifrə ən azı 14 simvol olmalıdır" : null,
       showCancelButton: true,
       confirmButtonText: "Şifrəni dəyiş",
       cancelButtonText: "İmtina",

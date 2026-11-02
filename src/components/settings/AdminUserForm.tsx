@@ -125,7 +125,7 @@ export default function AdminUserForm({
               value={values.password}
               disabled={disabled}
               error={Boolean(errors.password)}
-              hint={errors.password ?? "Ən azı 8 simvol"}
+              hint={errors.password ?? "Ən azı 14 simvol"}
               placeholder="••••••••"
               onChange={(event) => set("password", event.target.value)}
             />

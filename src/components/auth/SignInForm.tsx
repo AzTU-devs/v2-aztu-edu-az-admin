@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
-import authService from "../../services/auth/authService";
+import authService, { type MFASetupResponse } from "../../services/auth/authService";
 import { loginSuccess, logout, setSession } from "../../redux/slices/authSlice";
 
 const fieldBase =
@@ -22,6 +22,9 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [setup, setSetup] = useState<MFASetupResponse | null>(null);
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,7 +35,15 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      const data = await authService.login(username, password);
+      const data = setup
+        ? await authService.confirmMfa(setup.setup_token, verificationCode.trim())
+        : await authService.login(username, password, verificationCode.trim());
+      if ("mfa_setup_required" in data) {
+        setSetup(data);
+        setPassword("");
+        setVerificationCode("");
+        return;
+      }
       // The token has to land in the store first — apiClient reads it from there
       // to authorise the /auth/me call that follows.
       dispatch(loginSuccess({ token: data.access_token }));
@@ -46,13 +57,16 @@ export default function SignInForm() {
         return;
       }
 
-      navigate("/");
+      if (data.recovery_codes?.length) {
+        setRecoveryCodes(data.recovery_codes);
+        setSetup(null);
+      } else { navigate("/"); }
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { detail?: string } } };
       const status = axiosErr.response?.status;
 
       if (status === 401) {
-        setError("İstifadəçi adı və ya şifrə yanlışdır.");
+        setError("Giriş məlumatları və ya təsdiq kodu yanlışdır. Quraşdırma vaxtı bitibsə səhifəni yeniləyin.");
       } else if (status === 403) {
         setError("Hesabınız deaktiv edilmişdir. Zəhmət olmasa administratorla əlaqə saxlayın.");
       } else if (status === 429) {
@@ -64,6 +78,15 @@ export default function SignInForm() {
       setLoading(false);
     }
   };
+
+  if (recoveryCodes.length) return (
+    <div className="mx-auto w-full max-w-md space-y-5">
+      <h1 className="text-title-sm font-semibold dark:text-white">Bərpa kodlarını saxlayın</h1>
+      <p className="text-gray-500">Telefonunuza giriş itərsə hər kod bir dəfə istifadə edilə bilər. Kodları təhlükəsiz, ayrıca yerdə saxlayın. Bu kodlar yenidən göstərilməyəcək.</p>
+      <pre className="rounded-xl border p-4 text-gray-800 dark:text-white">{recoveryCodes.join("\n")}</pre>
+      <button className="rounded-xl bg-brand-500 px-5 py-3 text-white" onClick={() => { setRecoveryCodes([]); navigate("/"); }}>Kodları saxladım, davam et</button>
+    </div>
+  );
 
   return (
     <div className="w-full max-w-md animate-fade-in-up mx-auto">
@@ -78,6 +101,7 @@ export default function SignInForm() {
 
       <form onSubmit={handleSubmit}>
         <div className="space-y-5">
+          {!setup && <>
           <div>
             <label htmlFor="signin-username" className={labelClass}>
               E-poçt ünvanı <span className="text-error-500">*</span>
@@ -144,6 +168,21 @@ export default function SignInForm() {
             </div>
           </div>
 
+          </>}
+          {setup && (
+            <div className="space-y-3 rounded-xl border p-4 text-sm text-gray-700 dark:text-gray-200">
+              <h2 className="font-semibold">İki mərhələli təsdiqi qurun</h2>
+              <p>Authenticator tətbiqinizdə yeni hesab əlavə edin. Vaxt əsaslı kod seçin və aşağıdakı açarı daxil edin.</p>
+              <code className="block break-all select-all rounded bg-gray-100 p-3 dark:bg-gray-800">{setup.secret}</code>
+              <p>Sonra tətbiqdə göstərilən 6 rəqəmli kodu yazın. Quraşdırma 5 dəqiqə ərzində tamamlanmalıdır.</p>
+            </div>
+          )}
+          <div>
+            <label htmlFor="signin-code" className={labelClass}>{setup ? "Authenticator kodu" : "Authenticator və ya bərpa kodu (qurulubsa)"}</label>
+            <input id="signin-code" name="verification-code" autoComplete="one-time-code" required={Boolean(setup)}
+              maxLength={32} value={verificationCode} onChange={e => setVerificationCode(e.target.value)} disabled={loading}
+              className={`${fieldBase} ${fieldState(Boolean(error))}`} />
+          </div>
           {error && (
             <p
               id="signin-error"

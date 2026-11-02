@@ -235,7 +235,8 @@ export const navGroups: NavGroup[] = [
         icon: <GroupsIcon />,
         name: "Tədris təqvimi və qaydalar",
         subItems: [
-          { name: "Akademik Təqvim", path: "/about/academic-calendar" },
+          { name: "Akademik Təqvim 2025-2026", path: "/about/academic-calendar" },
+          { name: "Akademik Təqvim 2026-2027", path: "/about/academic-calendar-2026" },
           { name: "Qiymətləndirmə və İmtahan Qaydaları", path: "/about/assessment-rules" },
           { name: "Kredit Sistemi", path: "/about/credit-system" },
           { name: "LMS Təlimatları", path: "/about/lms-guidelines" },

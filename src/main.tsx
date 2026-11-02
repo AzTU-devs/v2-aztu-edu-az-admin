@@ -7,19 +7,19 @@ import App from "./App.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { store, persistor } from "./redux/store.ts";
+import SessionBootstrap from "./components/auth/SessionBootstrap";
+import { store } from "./redux/store.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <SessionBootstrap>
         <ThemeProvider>
           <AppWrapper>
             <App />
           </AppWrapper>
         </ThemeProvider>
-      </PersistGate>
+      </SessionBootstrap>
     </Provider>
   </StrictMode>,
 );

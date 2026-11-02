@@ -166,10 +166,10 @@ export default function AdminUsersPage() {
     const { value, isConfirmed } = await Swal.fire({
       title: `"${user.username}" üçün yeni şifrə`,
       input: "password",
-      inputPlaceholder: "Ən azı 8 simvol",
+      inputPlaceholder: "Ən azı 14 simvol",
       inputAttributes: { autocomplete: "new-password" },
       inputValidator: (input) =>
-        !input || input.length < 8 ? "Şifrə ən azı 8 simvol olmalıdır" : null,
+        !input || input.length < 14 ? "Şifrə ən azı 14 simvol olmalıdır" : null,
       showCancelButton: true,
       confirmButtonText: "Şifrəni dəyiş",
       cancelButtonText: "İmtina",

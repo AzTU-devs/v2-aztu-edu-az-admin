@@ -4,6 +4,14 @@ import type { ApiMessage, MeData, MeResponse } from '../../types/rbac';
 export interface LoginResponse {
   access_token: string;
   token_type: string;
+  recovery_codes?: string[];
+}
+
+export interface MFASetupResponse {
+  mfa_setup_required: true;
+  setup_token: string;
+  secret: string;
+  provisioning_uri: string;
 }
 
 export interface ChangePasswordPayload {
@@ -12,12 +20,17 @@ export interface ChangePasswordPayload {
 }
 
 const authService = {
-  login: async (username: string, password: string): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>(
+  login: async (username: string, password: string, code = ""): Promise<LoginResponse | MFASetupResponse> => {
+    const response = await apiClient.post<LoginResponse | MFASetupResponse>(
       '/api/auth/login',
-      { username, password },
+      { username, password, ...(/^\d{6}$/.test(code) ? { otp_code: code } : code ? { recovery_code: code } : {}) },
       { withCredentials: true }
     );
+    return response.data;
+  },
+
+  confirmMfa: async (setup_token: string, otp_code: string): Promise<LoginResponse> => {
+    const response = await apiClient.post<LoginResponse>('/api/auth/mfa/confirm', { setup_token, otp_code });
     return response.data;
   },
 
