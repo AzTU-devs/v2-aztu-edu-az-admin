@@ -14,6 +14,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaBold, FaItalic, FaUnderline, FaListUl, FaListOl, FaLink, FaImage, FaCode, FaTable, FaEye, FaTimes, FaPaperclip } from 'react-icons/fa';
 import { uploadAnnouncementFile } from '../../services/announcement/announcementService';
 import { LineHeight, LINE_HEIGHTS } from './LineHeight';
+import { safeHtml } from "../../util/safeHtml";
 
 const MenuBar = ({ editor, onPreview, onAddLink, onAddEmail, onAttachFile, attaching }: { editor: any; onPreview: () => void; onAddLink: () => void; onAddEmail: () => void; onAttachFile: () => void; attaching: boolean }) => {
     if (!editor) return null;
@@ -286,7 +287,7 @@ const Editor: React.FC<EditorProps> = ({ onUpdate, initialContent, readOnlyConte
                                 '--tw-prose-ol-counter-style': 'decimal',
                                 borderCollapse: 'collapse',
                             } as any}
-                            dangerouslySetInnerHTML={{ __html: editor?.getHTML() || '' }}
+                            dangerouslySetInnerHTML={{ __html: safeHtml(editor?.getHTML()) }}
                         />
                     </div>
                 </div>,

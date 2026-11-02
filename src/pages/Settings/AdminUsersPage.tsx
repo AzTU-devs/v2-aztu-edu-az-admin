@@ -108,7 +108,8 @@ export default function AdminUsersPage() {
     successTitle: string
   ) => {
     const { isConfirmed } = await Swal.fire({
-      title: confirm.title,
+      // titleText: these titles carry usernames; `title` would be parsed as HTML.
+      titleText: confirm.title,
       text: confirm.text,
       icon: "warning",
       showCancelButton: true,
@@ -164,7 +165,7 @@ export default function AdminUsersPage() {
 
   const handleResetPassword = async (user: AdminUserListItem) => {
     const { value, isConfirmed } = await Swal.fire({
-      title: `"${user.username}" üçün yeni şifrə`,
+      titleText: `"${user.username}" üçün yeni şifrə`,
       input: "password",
       inputPlaceholder: "Ən azı 14 simvol",
       inputAttributes: { autocomplete: "new-password" },

@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../compon
 import usePermissions from "../../hooks/usePermissions";
 import rbacService from "../../services/rbac/rbacService";
 import { SUPER_ADMIN_CODE, type RoleListItem } from "../../types/rbac";
+import { escapeHtml } from "../../util/safeHtml";
 
 const headClass =
   "px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500";
@@ -59,12 +60,14 @@ export default function RolesPage() {
     if (role.user_count > 0) {
       const targets = roles.filter((item) => item.id !== role.id);
       const { value, isConfirmed } = await Swal.fire({
-        title: `"${role.name_az}" rolunu sil`,
-        html: `Bu rola <b>${role.user_count}</b> istifadəçi bağlıdır. Onlar hansı rola keçirilsin?`,
+        // Text-only options: SweetAlert2 renders title/html (and select labels)
+        // as HTML, and role names are editable.
+        titleText: `"${role.name_az}" rolunu sil`,
+        text: `Bu rola ${role.user_count} istifadəçi bağlıdır. Onlar hansı rola keçirilsin?`,
         icon: "warning",
         input: "select",
         inputOptions: targets.reduce<Record<string, string>>((acc, item) => {
-          acc[String(item.id)] = item.name_az;
+          acc[String(item.id)] = escapeHtml(item.name_az);
           return acc;
         }, {}),
         inputPlaceholder: "Yeni rol seçin",
@@ -80,7 +83,7 @@ export default function RolesPage() {
       reassignToRoleId = Number(value);
     } else {
       const { isConfirmed } = await Swal.fire({
-        title: `"${role.name_az}" rolunu silmək istəyirsiniz?`,
+        titleText: `"${role.name_az}" rolunu silmək istəyirsiniz?`,
         text: "Bu əməliyyat geri alına bilməz!",
         icon: "warning",
         showCancelButton: true,

@@ -35,6 +35,7 @@ const ACADEMIC_TITLES = ["—", "Professor", "Dosent", "Böyük müəllim", "Mü
 const DAYS = ["Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə", "Bazar"];
 const EDUCATION_LEVELS = ["Bakalavr", "Magistr", "Doktorantura", "Digər"];
 import { API_BASE_URL } from "../../util/apiClient";
+import { escapeHtml } from "../../util/safeHtml";
 
 // Single source of truth — this used to hardcode the retired
 // api-aztu.karamshukurlu.site host, so every image 404'd.
@@ -324,7 +325,7 @@ export default function EmployeeForm({ mode, initialData }: EmployeeFormProps) {
                 Swal.fire({
                     icon: "error",
                     title: "Xəta",
-                    html: Object.values(result.errors).flat().map((e) => `<div>${e}</div>`).join(""),
+                    html: Object.values(result.errors).flat().map((e) => `<div>${escapeHtml(e)}</div>`).join(""),
                     timer: 4000,
                     showConfirmButton: false,
                 });

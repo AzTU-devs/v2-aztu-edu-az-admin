@@ -564,7 +564,9 @@ export default function HeaderManager() {
     call: () => Promise<MutateResult>
   ) => {
     const confirmed = await Swal.fire({
-      title: `"${title}" silinsin?`,
+      // titleText, not title: SweetAlert2 renders `title` as HTML and this
+      // comes from an editable menu label.
+      titleText: `"${title}" silinsin?`,
       text,
       icon: "warning",
       showCancelButton: true,

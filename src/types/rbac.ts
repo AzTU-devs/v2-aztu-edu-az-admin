@@ -199,7 +199,9 @@ export type AdminUserListResponse = ApiData<Paginated<AdminUserListItem>>;
 
 /* ── activity log ──────────────────────────────────────────────────────── */
 
-export type ActivityOutcome = "success" | "denied";
+// "audit_allowed": a permission check failed but the request still ran
+// because the API was in audit mode (never the case in production).
+export type ActivityOutcome = "success" | "denied" | "audit_allowed";
 
 export interface ActivityItem {
   id: number;

@@ -4,6 +4,7 @@ import { CircularProgress } from "@mui/material";
 import { getCafedraDetails, CafedraDetail } from "../../services/cafedra/cafedraService";
 import { getImageUrl } from "../../util/imageUrl";
 import Button from "../ui/button/Button";
+import { safeHtml } from "../../util/safeHtml";
 
 export default function CafedraView() {
   const { cafedra_code } = useParams();
@@ -122,7 +123,7 @@ export default function CafedraView() {
                     {item.email && <span><span className="font-semibold">Email:</span> {item.email}</span>}
                     {item.phone_number && <span><span className="font-semibold">Tel:</span> {item.phone_number}</span>}
                   </div>
-                  <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: item.az?.html_content || item.en?.html_content || item.az?.description || item.en?.description || "" }} />
+                  <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: safeHtml(item.az?.html_content || item.en?.html_content || item.az?.description || item.en?.description) }} />
                 </div>
               </div>
 
@@ -174,12 +175,12 @@ export default function CafedraView() {
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">AZ adı</p>
             <p className="mt-2 text-base font-semibold text-gray-900 dark:text-white">{cafedra?.az?.title || "–"}</p>
-            <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: cafedra?.az?.html_content || "" }} />
+            <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: safeHtml(cafedra?.az?.html_content) }} />
           </div>
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">EN name</p>
             <p className="mt-2 text-base font-semibold text-gray-900 dark:text-white">{cafedra?.en?.title || "–"}</p>
-            <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: cafedra?.en?.html_content || "" }} />
+            <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: safeHtml(cafedra?.en?.html_content) }} />
           </div>
         </div>
 
@@ -224,11 +225,11 @@ export default function CafedraView() {
             <div className="mt-4 grid gap-4 lg:grid-cols-2 pt-4 border-t border-gray-200 dark:border-gray-800">
               <div>
                 <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Bioqrafiya (AZ)</p>
-                <div className="text-xs text-gray-600 dark:text-gray-400 prose prose-xs dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: cafedra.director.az?.bio || "" }} />
+                <div className="text-xs text-gray-600 dark:text-gray-400 prose prose-xs dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: safeHtml(cafedra.director.az?.bio) }} />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Biography (EN)</p>
-                <div className="text-xs text-gray-600 dark:text-gray-400 prose prose-xs dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: cafedra.director.en?.bio || "" }} />
+                <div className="text-xs text-gray-600 dark:text-gray-400 prose prose-xs dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: safeHtml(cafedra.director.en?.bio) }} />
               </div>
             </div>
           </div>

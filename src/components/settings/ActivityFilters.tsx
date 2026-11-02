@@ -155,6 +155,9 @@ export default function ActivityFilters({
             <option value="denied" className="dark:bg-gray-900">
               İcazə verilmədi
             </option>
+            <option value="audit_allowed" className="dark:bg-gray-900">
+              İcazəsiz, audit rejimində icra olundu
+            </option>
           </select>
         </div>
 

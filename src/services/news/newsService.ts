@@ -98,7 +98,7 @@ export const getNews = async (start: number, end: number, lang: string) => {
 
 export const getNewsDetails = async (newsId: string, lang: string) => {
     try {
-        const response = await apiClient.get(`/api/news/${newsId}?lang=${lang}`);
+        const response = await apiClient.get(`/api/news/admin/${newsId}?lang=${lang}`);
 
         if (response.data.status_code === 200) {
             return response.data.news as NewsDetail;

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Label from "../../../form/Label";
 import Editor from "../../../editor/Editor";
 import { fieldLabel } from "../formStyles";
+import { safeHtml } from "../../../../util/safeHtml";
 
 interface RichTextFieldProps {
   value: string;
@@ -60,7 +61,7 @@ export default function RichTextField({
           ) : (
             <span
               className="prose prose-sm dark:prose-invert max-w-none line-clamp-6"
-              dangerouslySetInnerHTML={{ __html: value }}
+              dangerouslySetInnerHTML={{ __html: safeHtml(value) }}
             />
           )}
         </button>

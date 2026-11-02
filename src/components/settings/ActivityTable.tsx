@@ -11,6 +11,7 @@ const headClass =
 
 const statusColor = (item: ActivityItem) => {
   if (item.outcome === "denied") return "warning" as const;
+  if (item.outcome === "audit_allowed") return "error" as const;
   if (item.status_code >= 500) return "error" as const;
   if (item.status_code >= 400) return "error" as const;
   return "success" as const;
