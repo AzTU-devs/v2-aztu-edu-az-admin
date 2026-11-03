@@ -116,6 +116,9 @@ export const ROUTE_PERMISSIONS: Record<string, string | string[]> = {
   "/chat/sessions": "chat.read",
   "/chat/stats": "chat.read",
 
+  // Detail pages (/contact-messages/12) inherit this by longest-prefix.
+  "/contact-messages": "contact_messages.read",
+
   "/settings/roles": "roles.read",
   "/settings/roles/new": "roles.create",
   "/settings/admin-users": "admin_users.read",

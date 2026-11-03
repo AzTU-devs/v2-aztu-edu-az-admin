@@ -300,6 +300,7 @@ export const PERMISSION_DOMAIN_LABELS_AZ: Record<string, string> = {
   menu: "Menyu və altlıq",
   menu_header: "Başlıq menyusu",
   chatbot_knowledge: "Çatbot bilik bazası",
+  contact_messages: "Əlaqə mesajları",
   search: "Axtarış",
   roles: "Rollar",
   admin_users: "Admin istifadəçilər",

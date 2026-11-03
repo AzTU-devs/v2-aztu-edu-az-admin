@@ -11,10 +11,12 @@ import {
   filterNavGroups,
   findNavMatch,
   navItemKey,
+  type NavBadgeKey,
   type NavGroup,
   type NavItem,
 } from "./navConfig";
 import useNavGroups from "./useNavGroups";
+import useContactUnreadCount from "../components/contact/useContactUnreadCount";
 
 const AppSidebar: React.FC = () => {
   const {
@@ -34,6 +36,12 @@ const AppSidebar: React.FC = () => {
   const isOpen = isExpanded || isHovered || isMobileOpen;
 
   const visible = useNavGroups();
+
+  // Counters shown beside an entry. Only fetched for accounts that can open
+  // the entry, and hidden at zero.
+  const badges: Record<NavBadgeKey, number> = {
+    contactUnread: useContactUnreadCount(),
+  };
 
   const match = useMemo(
     () => findNavMatch(location.pathname, visible),
@@ -123,6 +131,25 @@ const AppSidebar: React.FC = () => {
                     {nav.icon}
                   </span>
                   {isOpen && <span className="menu-item-text">{nav.name}</span>}
+                  {nav.badgeKey && badges[nav.badgeKey] > 0 && (
+                    <>
+                      <span className="sr-only">, {badges[nav.badgeKey]} oxunmamış</span>
+                      {isOpen ? (
+                        <span
+                          aria-hidden="true"
+                          className="ml-auto rounded-full bg-brand-500 px-2 py-0.5 text-[11px] font-semibold leading-none text-white"
+                        >
+                          {badges[nav.badgeKey] > 99 ? "99+" : badges[nav.badgeKey]}
+                        </span>
+                      ) : (
+                        // Collapsed rail: a dot on the icon instead of a number.
+                        <span
+                          aria-hidden="true"
+                          className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand-500"
+                        />
+                      )}
+                    </>
+                  )}
                 </Link>
               )
             )}

@@ -83,6 +83,8 @@ import ActivityLogPage from "./pages/Settings/ActivityLogPage";
 import ChatSessionsPage from "./pages/Chat/ChatSessionsPage";
 import ChatSessionDetailPage from "./pages/Chat/ChatSessionDetailPage";
 import ChatStatsPage from "./pages/Chat/ChatStatsPage";
+import ContactMessagesPage from "./pages/ContactMessages/ContactMessagesPage";
+import ContactMessageDetailPage from "./pages/ContactMessages/ContactMessageDetailPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
 function ProtectedRoute() {
@@ -270,6 +272,15 @@ export default function App() {
               <Route path="/chat/sessions" element={<ChatSessionsPage />} />
               <Route path="/chat/sessions/:session_id" element={<ChatSessionDetailPage />} />
               <Route path="/chat/stats" element={<ChatStatsPage />} />
+            </Route>
+
+            {/*
+              Contact-form inbox. Visitors' names, e-mail addresses and messages,
+              so reading it is its own key rather than part of another domain.
+            */}
+            <Route element={<RequirePermission perm="contact_messages.read" />}>
+              <Route path="/contact-messages" element={<ContactMessagesPage />} />
+              <Route path="/contact-messages/:message_id" element={<ContactMessageDetailPage />} />
             </Route>
 
             </Route>

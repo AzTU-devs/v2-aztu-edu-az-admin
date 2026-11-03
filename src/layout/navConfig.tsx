@@ -9,6 +9,7 @@ import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import GavelIcon from '@mui/icons-material/Gavel';
 import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import CategoryIcon from '@mui/icons-material/Category';
 import ForumIcon from '@mui/icons-material/Forum';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -35,12 +36,16 @@ export type NavSubItem = {
   permission?: string | string[];
 };
 
+/** Live counters the sidebar can show next to an entry (see AppSidebar). */
+export type NavBadgeKey = "contactUnread";
+
 export type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
   permission?: string | string[];
   subItems?: NavSubItem[];
+  badgeKey?: NavBadgeKey;
 };
 
 export type NavGroup = {
@@ -321,6 +326,24 @@ export const navGroups: NavGroup[] = [
           { name: "Header menyu", path: "/menu-header" },
           { name: "Sürətli keçid menyusu", path: "/menu-quick" },
         ],
+      },
+    ],
+  },
+  {
+    /*
+      Messages sent through the website's contact form. Gated on its own key,
+      like the chat group below: the inbox holds visitors' names, e-mail
+      addresses and words. The badge is the unread count.
+    */
+    label: "Müraciətlər",
+    permission: "contact_messages.read",
+    items: [
+      {
+        icon: <MailOutlineIcon />,
+        name: "Əlaqə mesajları",
+        path: "/contact-messages",
+        permission: "contact_messages.read",
+        badgeKey: "contactUnread",
       },
     ],
   },
