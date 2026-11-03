@@ -75,11 +75,6 @@ export default function RoleEditorPage() {
     };
   }, [roleId]);
 
-  /**
-   * super_admin holds zero grant rows by design and the server answers 409 to any
-   * edit of its set (invariant R2). The matrix is locked so the refusal is stated
-   * up front rather than arriving as an error after the user has done the work.
-   */
   const isSuperAdmin = role?.code === SUPER_ADMIN_CODE;
   const canEdit = isNew ? can("roles.create") : can("roles.update");
   const canEditPermissions = isNew

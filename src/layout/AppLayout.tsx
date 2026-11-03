@@ -10,15 +10,11 @@ const LayoutContent: React.FC = () => {
   const { isExpanded, isMobileOpen, closeMobileSidebar, toggleSidebar } = useSidebar();
   const location = useLocation();
 
-  // Navigating away is an implicit dismissal — without this the drawer stays
-  // open on top of the page the user just asked for.
   useEffect(() => {
     closeMobileSidebar();
   }, [location.pathname, closeMobileSidebar]);
 
   useEffect(() => {
-    // ⌘B belongs to whatever the user is typing into first — the rich text
-    // editor binds it to bold, and a plain input has its own text handling.
     const isTextEntry = (target: EventTarget | null): boolean => {
       if (!(target instanceof HTMLElement)) return false;
       if (target.isContentEditable) return true;
@@ -50,8 +46,6 @@ const LayoutContent: React.FC = () => {
     <div
       className="min-h-screen lg:grid"
       style={{
-        // Only the pinned state moves the content column. Hover-expansion floats
-        // the rail over the page instead, so the layout never jumps.
         gridTemplateColumns: `${
           isExpanded ? "var(--sidebar-w)" : "var(--sidebar-w-collapsed)"
         } minmax(0, 1fr)`,

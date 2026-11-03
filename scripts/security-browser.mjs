@@ -3,8 +3,6 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import { chromium } from '@playwright/test';
 
-// Closed offline fixture: ALL browser traffic is fulfilled or aborted locally.
-// No credential, mutation or request is sent to the production hosts.
 const origin = 'https://admin.aztu.edu.az';
 const api = 'https://api.aztu.edu.az';
 const directory = path.resolve('dist');
@@ -91,7 +89,6 @@ try {
         await page.getByRole('button', { name: 'Daxil ol', exact: true }).click();
         await page.waitForURL(origin + '/');
         assert.equal(state.logins[1].otp_code, '123456');
-        // Remove the fixture's initial-storage seeding before reloading.
         await context.clearPermissions();
         await page.reload();
         await page.waitForTimeout(500);

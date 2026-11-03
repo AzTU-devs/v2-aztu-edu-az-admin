@@ -20,11 +20,6 @@ const FILTERS: { value: ContactStatusFilter; label: string }[] = [
   { value: "read", label: "Oxunmuş" },
 ];
 
-/**
- * Inbox for the website's contact form (/az/elaqe). Messages are visitors'
- * personal data: shown as plain text, never cached, and the dialogs below use
- * text-only SweetAlert2 options and carry no visitor detail at all.
- */
 export default function ContactMessagesPage() {
   const navigate = useNavigate();
   const { can } = usePermissions();
@@ -53,7 +48,6 @@ export default function ContactMessagesPage() {
       .finally(() => setLoading(false));
   }, [page, status, query]);
 
-  /** Free text is debounced; the status tabs apply immediately. */
   useEffect(() => {
     const timer = setTimeout(load, query ? 350 : 0);
     return () => clearTimeout(timer);
@@ -98,7 +92,6 @@ export default function ContactMessagesPage() {
     try {
       await contactMessageService.remove(item.id);
       Swal.fire({ icon: "success", titleText: "Uğurla silindi", showConfirmButton: false, timer: 1400 });
-      // Stepping back a page keeps the view from stranding on an empty last page.
       if (items.length === 1 && page > 1) setPage((prev) => prev - 1);
       else load();
     } catch (err) {

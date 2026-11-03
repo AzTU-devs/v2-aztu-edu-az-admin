@@ -13,9 +13,7 @@ interface ContactMessagesTableProps {
   loading?: boolean;
   pageSize?: number;
   onOpen: (id: number) => void;
-  /** Omitted without contact_messages.update — the button disappears with it. */
   onToggleRead?: (item: ContactMessageSummary) => void;
-  /** Omitted without contact_messages.delete. */
   onDelete?: (item: ContactMessageSummary) => void;
   busyId?: number | null;
 }
@@ -26,10 +24,6 @@ const headerCell =
 const actionButton =
   "rounded-lg p-1.5 transition-colors disabled:opacity-40";
 
-/**
- * Visitor-authored fields (name, e-mail, subject, preview) are React text
- * children only, so markup in a message shows as the characters typed.
- */
 export default function ContactMessagesTable({
   items,
   loading = false,
@@ -157,7 +151,6 @@ export default function ContactMessagesTable({
                             aria-label={unread ? "Oxunmuş et" : "Oxunmamış et"}
                             disabled={busyId === item.id}
                             onClick={(event) => {
-                              // The row itself opens the message.
                               event.stopPropagation();
                               onToggleRead(item);
                             }}

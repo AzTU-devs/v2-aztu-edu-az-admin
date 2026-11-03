@@ -85,7 +85,6 @@ export default function ActivityLogPage() {
       .finally(() => setLoading(false));
   }, [page, filters]);
 
-  /** Free text is debounced; every other filter applies immediately. */
   useEffect(() => {
     const timer = setTimeout(load, filters.q ? 350 : 0);
     return () => clearTimeout(timer);
@@ -101,10 +100,6 @@ export default function ActivityLogPage() {
     setFilters(EMPTY_ACTIVITY_FILTERS);
   };
 
-  /**
-   * `admins` from /activity/filters carries `last_login_at`, so the "who was in
-   * most recently" card needs no extra request.
-   */
   const lastLogin = useMemo(() => {
     const admins = (options?.admins ?? []).filter((admin) => admin.last_login_at);
     if (admins.length === 0) return null;

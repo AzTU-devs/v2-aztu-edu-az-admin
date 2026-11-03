@@ -6,9 +6,6 @@ interface LockedPanelProps {
   description?: string;
 }
 
-/** Create mode: the incremental sections need a cafedra_code before their
- *  per-item endpoints exist. Show the section rather than hiding it, so the
- *  editor knows it is coming. */
 export default function LockedPanel({ title, description }: LockedPanelProps) {
   return (
     <div className={sectionCard}>

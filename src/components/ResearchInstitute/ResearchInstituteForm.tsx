@@ -24,7 +24,6 @@ interface ResearchInstituteFormProps {
   submitLabel: string;
 }
 
-/** Field labels per language tab, so the markup below stays declarative. */
 const FIELDS: {
   key: keyof Omit<InstituteTranslation, "name">;
   az: string;
@@ -48,11 +47,6 @@ const resolveImageUrl = (path?: string | null): string | undefined => {
     : `${base}/static/${clean}`;
 };
 
-/**
- * Declared at module scope on purpose: nesting it inside the form would give it
- * a new identity every render, remounting the file input and re-creating the
- * preview object URL on each keystroke elsewhere in the form.
- */
 function LogoField({
   currentImage,
   pendingFile,
@@ -67,7 +61,6 @@ function LogoField({
     [pendingFile]
   );
 
-  // Object URLs hold the blob alive until explicitly released.
   useEffect(() => {
     return () => {
       if (pendingUrl) URL.revokeObjectURL(pendingUrl);
@@ -160,8 +153,6 @@ export default function ResearchInstituteForm({
       return;
     }
 
-    // The logo rides a separate multipart request keyed by the institute code,
-    // which only exists once the record itself has been saved.
     if (logoFile) {
       const upload = await uploadInstituteImage(result.instituteCode, logoFile);
       if (upload.status !== "SUCCESS") {
@@ -201,11 +192,6 @@ export default function ResearchInstituteForm({
     </button>
   );
 
-  /**
-   * Both language panels stay mounted and one is hidden with CSS. The editor
-   * seeds itself from `initialContent` at mount only, so unmounting the inactive
-   * tab would blank it out the moment the user switched back.
-   */
   const renderLangPanel = (lang: Lang, value: InstituteTranslation) => (
     <div className={activeLang === lang ? "space-y-5" : "hidden"}>
       <div>

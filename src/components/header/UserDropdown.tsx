@@ -20,8 +20,6 @@ export default function UserDropdown() {
   );
   const { canAny, roleName } = usePermissions();
 
-  // first_name/last_name come from the admin account itself; the name/surname
-  // pair is legacy and accounts created before them carry only a username.
   const accountName = [first_name, last_name].filter(Boolean).join(" ");
   const legacyName = [name, surname].filter(Boolean).join(" ");
   const displayName = first_name || name || username || "İstifadəçi";

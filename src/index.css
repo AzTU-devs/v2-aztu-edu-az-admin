@@ -7,8 +7,6 @@ layer(base);
 
 @theme {
   --font-*: initial;
-  /* Noto Sans covers the full Azerbaijani set (ə ş ğ ç ö ü ı İ) consistently on
-     both macOS and Windows, which is why it leads rather than sits in fallback. */
   --font-sans: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --breakpoint-*: initial;
@@ -166,27 +164,9 @@ layer(base);
   --z-index-99999: 99999;
   --z-index-999999: 999999;
 
-  /* Shell elevation: a soft, wide shadow for surfaces that float over the page
-     (the hover-expanded rail, the mobile drawer) — softer than shadow-theme-lg,
-     which is tuned for cards sitting in the flow. */
   --shadow-elevate: 0px 8px 24px -6px rgba(16, 24, 40, 0.12),
     0px 2px 8px -2px rgba(16, 24, 40, 0.06);
 
-  /*
-    `backwards`, not `both`.
-
-    AppLayout wraps every page in this animation. With `both` the animation keeps
-    filling after it ends, and the final keyframe's `transform: none` resolves to
-    an identity *matrix* rather than the keyword `none` — so the wrapper keeps a
-    transform forever. A transformed ancestor becomes the containing block for its
-    `position: fixed` descendants, which meant every modal inside a page was sized
-    and positioned against the page wrapper instead of the viewport, landing off
-    screen on long pages.
-
-    `backwards` still applies the `from` state before the animation starts, so the
-    entrance is unchanged, but afterwards the element reverts to its own style and
-    the computed transform is genuinely `none`.
-  */
   --animate-fade-in-up: fade-in-up 0.32s cubic-bezier(0.23, 1, 0.32, 1) backwards;
 
   @keyframes fade-in-up {
@@ -210,11 +190,6 @@ layer(base);
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  /*
-    Shell dimensions. These live on :root rather than in @theme because the
-    layout grid and the sidebar width read them from inline styles at runtime —
-    Tailwind never sees those references and would drop an unused theme variable.
-  */
   :root {
     --sidebar-w: 280px;
     --sidebar-w-collapsed: 84px;
@@ -265,13 +240,10 @@ layer(base);
   @apply text-gray-600 hover:bg-gray-100/80 hover:text-gray-900 group-hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-gray-200;
 }
 
-/* The 3px accent on the active row. Sits flush against the rail edge. */
 @utility menu-item-rail {
   @apply absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-500 dark:bg-brand-400;
 }
 
-/* Labels must be able to shrink, otherwise a long entry pushes the chevron out
-   of the rail while it animates between the two widths. */
 @utility menu-item-text {
   @apply min-w-0 flex-1 truncate text-left;
 }
@@ -306,8 +278,6 @@ layer(base);
   @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
 }
 
-/* Children hang off a guide line aligned to the centre of the parent icon
-   (px-3 + half of a 24px icon = 24px), which is what makes the tree readable. */
 @utility menu-dropdown-list {
   @apply mt-1 ml-6 flex flex-col gap-0.5 border-l border-gray-100 pl-4 dark:border-gray-800;
 }
@@ -351,14 +321,11 @@ layer(base);
     @apply w-full min-w-0 bg-transparent text-theme-sm text-gray-800 outline-none placeholder:text-gray-400 dark:text-gray-200 dark:placeholder:text-gray-500;
   }
 
-  /* The native clear affordance sits badly inside a bordered pill. */
   & input::-webkit-search-cancel-button {
     @apply appearance-none;
   }
 }
 
-/* The header's square icon buttons — one definition so the toggle, the search
-   trigger and the mobile actions cannot drift apart again. */
 @utility header-icon-btn {
   @apply flex size-9 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-gray-200;
 }

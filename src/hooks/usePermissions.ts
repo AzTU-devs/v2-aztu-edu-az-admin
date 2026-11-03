@@ -11,15 +11,9 @@ export interface Permissions {
   permissions: string[];
   roleCode: string | null;
   roleName: string | null;
-  /** True while the server is running permissively; guards warn instead of blocking. */
   isAuditMode: boolean;
 }
 
-/**
- * Mirrors the server check: a super admin short-circuits and never consults the
- * grant list (it is empty by design). This is presentation only — the API is the
- * authority, and every guarded route is re-checked server side per request.
- */
 export const usePermissions = (): Permissions => {
   const isSuperAdmin = useSelector((state: RootState) => state.auth.is_super_admin);
   const permissions = useSelector((state: RootState) => state.auth.permissions);

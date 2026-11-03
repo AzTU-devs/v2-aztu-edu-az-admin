@@ -55,12 +55,6 @@ export default function AdminUserEditorPage() {
     setLoading(true);
     setLoadError(null);
 
-    /**
-     * The list endpoint is the only read path for admin users, so the row being
-     * edited is picked out of it. That same page also answers "is this the last
-     * active super admin" (invariant R4) without a second endpoint.
-     */
-    // 100 is the server's cap; asking for more is a 422, not a clamp.
     Promise.all([rbacService.getRoles(), adminUserService.list({ page: 1, page_size: 100 })])
       .then(([roleList, page]) => {
         if (cancelled) return;
@@ -130,8 +124,6 @@ export default function AdminUserEditorPage() {
           role_id: form.role_id,
           is_active: form.is_active,
         });
-        // The account already exists at this point, so an image failure must not
-        // send the admin back to a form that would now 409 on the username.
         if (form.profile_image_files.length > 0) {
           try {
             await adminUserService.uploadProfileImage(createdId, form.profile_image_files[0]);

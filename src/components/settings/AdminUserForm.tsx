@@ -13,9 +13,7 @@ export interface AdminUserFormValues {
   last_name: string;
   role_id: number | null;
   is_active: boolean;
-  /** Already-saved path from the API — null until an image is uploaded. */
   profile_image: string | null;
-  /** Picked but not yet uploaded; the editor sends it after the account is saved. */
   profile_image_files: File[];
 }
 
@@ -23,15 +21,8 @@ interface AdminUserFormProps {
   values: AdminUserFormValues;
   onChange: (values: AdminUserFormValues) => void;
   roles: RoleListItem[];
-  /** Editing an existing account — the password moves to its own reset action. */
   isEdit?: boolean;
-  /**
-   * The account being edited is the signed-in one. Invariant R5: an admin may not
-   * change their own role or deactivate themselves, so those controls are locked
-   * here rather than letting the server answer 409.
-   */
   isSelf?: boolean;
-  /** Invariant R4: the last active super admin may not be demoted or deactivated. */
   isLastSuperAdmin?: boolean;
   disabled?: boolean;
   errors?: Partial<Record<keyof AdminUserFormValues, string>>;

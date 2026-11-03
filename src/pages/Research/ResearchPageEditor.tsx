@@ -20,20 +20,6 @@ import {
 } from "../../services/research/researchPageService";
 import { getImageUrl } from "../../util/imageUrl";
 
-/**
- * Edits one screen of the Tədqiqat section.
- *
- * The whole page is one form with one Save button, matching how it saves on the
- * server. `template` says which shape the page is, exactly as the About editor
- * does — the sections below it are the union of every shape, each shown only
- * for the pages that have it.
- *
- * Everything the website draws by itself — the hero video, the breadcrumb, the
- * eyebrow, the "Strateji baxış" heading, the table headers, the card icons,
- * numbering and gradients, the counter strip, the document-viewer modal and the
- * SEO tags — is deliberately absent here.
- */
-
 type Lang = "az" | "en";
 
 interface Bilingual {
@@ -136,7 +122,6 @@ const toForm = (page: ResearchPageDetail): PageForm => ({
   button_label: { az: str(page.az?.button_label), en: str(page.en?.button_label) },
 });
 
-/** Azerbaijani first — this dashboard is Azerbaijani. */
 const LANGS: { code: Lang; label: string }[] = [
   { code: "az", label: "Azərbaycanca" },
   { code: "en", label: "English" },
@@ -151,18 +136,11 @@ export default function ResearchPageEditor() {
   const [loading, setLoading] = useState(true);
   const [missing, setMissing] = useState(false);
   const [saving, setSaving] = useState(false);
-  // "<yearIndex>-<patentIndex>" of the row whose upload is in flight, so only
-  // that row's input is disabled rather than the whole table.
   const [uploading, setUploading] = useState<string | null>(null);
 
-  // The research pages are not all the same shape; the page says which form it
-  // is, exactly as the About editor does. Declared here rather than beside the
-  // render because `handleSave` reads it too.
   const isPatents = page?.template === "patents";
   const isSeminars = page?.template === "seminars";
   const isJournal = page?.template === "journal";
-  // `RichTextField` seeds its content once at mount, so every language switch
-  // and refetch has to remount it or the editors keep showing the old text.
   const [formKey, setFormKey] = useState(0);
 
   const load = useCallback(async () => {
@@ -238,7 +216,6 @@ export default function ResearchPageEditor() {
       return { ...prev, priorities };
     });
 
-  /** Rewrites one year in place; every patent handler below goes through it. */
   const editYear = (
     yearIndex: number,
     change: (year: PatentYearForm) => PatentYearForm
@@ -274,7 +251,6 @@ export default function ResearchPageEditor() {
         : prev
     );
 
-  /** `patent_number` and `document_url` are language-neutral; the rest are not. */
   const setPatent = (
     yearIndex: number,
     patentIndex: number,
@@ -321,18 +297,6 @@ export default function ResearchPageEditor() {
       return { ...yearRow, patents };
     });
 
-  /**
-   * Uploads a certificate and drops the returned path into the row. The file is
-   * stored immediately but the path is only persisted by the next Save, which
-   * is why the upload cannot write to the patent row itself — that row is
-   * replaced on every save.
-   *
-   * The row is addressed by position, and the await in the middle is exactly
-   * where a position stops being trustworthy: deleting or moving a row while
-   * the request is in flight would land the path on someone else's row. Rather
-   * than give every row a client-side id, the buttons that could move it are
-   * disabled for the duration — see `uploading` below.
-   */
   const handlePatentUpload = async (
     yearIndex: number,
     patentIndex: number,
@@ -521,22 +485,11 @@ export default function ResearchPageEditor() {
               }
             : {}),
         },
-        // Each template sends the collections it owns and omits the rest. An
-        // omitted key leaves those rows untouched on the server, so the patents
-        // page can never blank out a priorities page's cards, or the reverse.
         ...(isPatents
           ? {
-              // A patent row with no number and no name in either language is
-              // an empty row the editor added and never filled in; a year left
-              // with no label and no rows likewise. Neither reaches the site.
               patent_years: form.patent_years
                 .map((yearRow) => ({
                   year: yearRow.year,
-                  // Anything the editor actually put in the row keeps it: a
-                  // certificate they uploaded or a link they pasted counts just
-                  // as much as a number or a name. Dropping a row that holds an
-                  // uploaded file would strand that file on disk and lose work
-                  // the editor can see on screen.
                   patents: yearRow.patents.filter(
                     (patent) =>
                       patent.patent_number.trim() ||
@@ -576,7 +529,6 @@ export default function ResearchPageEditor() {
           : isJournal
           ? {}
           : {
-              // A card with no heading in either language was never filled in.
               priorities: form.priorities
                 .filter(
                   (priority) => priority.title.az.trim() || priority.title.en.trim()
@@ -592,7 +544,6 @@ export default function ResearchPageEditor() {
                   },
                 })),
             }),
-        // A button with neither a label nor a URL is an empty row the editor
         // added and never filled in; it should not reach the website. The
         // journal page has no "More in this section", so it sends no links.
         ...(isJournal
@@ -721,9 +672,6 @@ export default function ResearchPageEditor() {
           </Button>
           <Button
             onClick={handleSave}
-            // Also blocked mid-upload: saving reloads the form from the server,
-            // which re-sorts the years, and the in-flight upload is still
-            // holding the positions the old list had.
             disabled={saving || uploading !== null}
             startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
           >
@@ -1087,9 +1035,6 @@ export default function ResearchPageEditor() {
                                 <Label>və ya fayl yüklə</Label>
                                 <input
                                   type="file"
-                                  // Every input, not just this row's: `uploading`
-                                  // is one slot, so a second concurrent upload
-                                  // would clear the first one's guard.
                                   disabled={uploading !== null}
                                   onChange={(event) => {
                                     void handlePatentUpload(
@@ -1097,8 +1042,6 @@ export default function ResearchPageEditor() {
                                       patentIndex,
                                       event.target.files?.[0] ?? null
                                     );
-                                    // Let the same file be picked again after a
-                                    // failed upload.
                                     event.target.value = "";
                                   }}
                                   className="block w-full text-sm text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:text-brand-600 hover:file:bg-brand-100 disabled:opacity-50 dark:text-gray-400 dark:file:bg-gray-800 dark:file:text-gray-200"
@@ -1352,9 +1295,6 @@ export default function ResearchPageEditor() {
         <div className="flex justify-end">
           <Button
             onClick={handleSave}
-            // Also blocked mid-upload: saving reloads the form from the server,
-            // which re-sorts the years, and the in-flight upload is still
-            // holding the positions the old list had.
             disabled={saving || uploading !== null}
             startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
           >

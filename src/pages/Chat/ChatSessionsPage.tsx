@@ -83,7 +83,6 @@ export default function ChatSessionsPage() {
     try {
       await chatAdminService.deleteSession(sessionId);
       Swal.fire({ icon: "success", title: "Uğurla silindi", showConfirmButton: false, timer: 1400 });
-      // Stepping back a page keeps the view from stranding on an empty last page.
       if (items.length === 1 && page > 1) setPage((prev) => prev - 1);
       else load();
       chatAdminService.getStats().then(setStats).catch(() => undefined);

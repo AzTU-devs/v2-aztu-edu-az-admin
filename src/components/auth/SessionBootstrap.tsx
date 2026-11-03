@@ -3,7 +3,6 @@ import { store } from "../../redux/store";
 import { logout, setSession } from "../../redux/slices/authSlice";
 import { fetchMe, refreshAccessToken } from "../../util/apiClient";
 
-// Share the startup operation under React StrictMode and across mounts.
 let restoration: Promise<void> | undefined;
 function restore() {
     restoration ??= (async () => {

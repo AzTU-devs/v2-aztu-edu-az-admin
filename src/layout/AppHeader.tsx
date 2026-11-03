@@ -12,7 +12,6 @@ import useNavGroups from "./useNavGroups";
 type Crumb = {
   label: string;
   path?: string;
-  /** Group labels are context, not destinations — they drop out first. */
   muted?: boolean;
 };
 
@@ -38,12 +37,6 @@ const AppHeader: React.FC = () => {
 
   const visible = useNavGroups();
 
-  /**
-   * The trail is derived from the same nav config the sidebar renders, so the
-   * two can never disagree about where the user is. Routes outside the menu
-   * (e.g. /profile) simply show the root crumb. It walks the permission-filtered
-   * tree, so the trail never names a section the sidebar hides.
-   */
   const crumbs = useMemo<Crumb[]>(() => {
     const trail: Crumb[] = [{ label: "Əsas səhifə", path: "/" }];
     const match = findNavMatch(location.pathname, visible);
@@ -64,8 +57,6 @@ const AppHeader: React.FC = () => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setApplicationMenuOpen(true);
-        // The mobile panel mounts in the same tick; focusing the desktop input
-        // is a no-op when it is hidden, and vice versa.
         requestAnimationFrame(() => inputRef.current?.focus());
       }
     };
@@ -77,8 +68,6 @@ const AppHeader: React.FC = () => {
     };
   }, []);
 
-  // A route change means the answer to "where am I" changed — the transient
-  // mobile search panel should not survive it.
   useEffect(() => {
     setApplicationMenuOpen(false);
   }, [location.pathname]);

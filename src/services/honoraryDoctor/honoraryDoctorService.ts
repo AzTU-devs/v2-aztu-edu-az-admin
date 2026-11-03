@@ -16,9 +16,7 @@ export interface HonoraryDoctorPayload {
     en_full_name: string;
     az_description?: string;
     en_description?: string;
-    /** A newly picked file. Omitted means "leave the current portrait alone". */
     image?: File | null;
-    /** Only meaningful on update: clears the stored portrait. */
     remove_image?: boolean;
 }
 

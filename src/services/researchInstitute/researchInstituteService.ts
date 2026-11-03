@@ -1,9 +1,5 @@
 import apiClient from "../../util/apiClient";
 
-/**
- * One language's worth of institute copy. Everything except `name` is rich text
- * produced by the Tiptap editor, so these are HTML strings, not plain text.
- */
 export interface InstituteTranslation {
   name: string;
   about_html: string;
@@ -13,7 +9,6 @@ export interface InstituteTranslation {
   additional_info_html: string;
 }
 
-/** Shape returned by `GET /admin/{code}` — both languages, for the edit form. */
 export interface ResearchInstituteDetail {
   id: number;
   institute_code: string;
@@ -26,7 +21,6 @@ export interface ResearchInstituteDetail {
   updated_at?: string | null;
 }
 
-/** Request body for create/update. The API generates `institute_code` itself. */
 export interface ResearchInstitutePayload {
   image?: string | null;
   website_url?: string | null;
@@ -63,8 +57,6 @@ export const getInstitutes = async (start: number, end: number, lang: string = "
       `${RESEARCH_INSTITUTE_BASE}/admin/all?start=${start}&end=${end}&lang=${lang}`
     );
 
-    // An empty list comes back as a real 204, which leaves axios with no body —
-    // so the status is checked before reaching into `data`.
     if (response.status === 204 || response.data?.status_code === 204) {
       return "NO CONTENT" as const;
     }
@@ -97,10 +89,6 @@ export const getInstituteDetails = async (instituteCode: string) => {
   }
 };
 
-/**
- * Create and update both resolve to the institute_code, which is what the form
- * needs next: the logo is uploaded in a second request keyed by that code.
- */
 export const createInstitute = async (payload: ResearchInstitutePayload) => {
   try {
     const response = await apiClient.post(`${RESEARCH_INSTITUTE_BASE}/create`, payload);

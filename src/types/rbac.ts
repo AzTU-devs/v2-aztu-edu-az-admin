@@ -1,11 +1,3 @@
-/**
- * Hand-written mirrors of the RBAC / activity-log API contract (plan §5).
- *
- * The backend builds JSONResponse by hand with a `status_code` key and no
- * response_model, so nothing here is generated — keep it in sync by hand.
- * Errors are always `{ status_code, message }`.
- */
-
 export type Lang = "az" | "en";
 
 export interface ApiError {
@@ -13,7 +5,6 @@ export interface ApiError {
   message: string;
 }
 
-/** 403 body — the axios interceptor must NOT refresh on this. */
 export interface PermissionDeniedError {
   status_code: 403;
   detail: string;
@@ -39,11 +30,8 @@ export interface Paginated<T> {
   has_more: boolean;
 }
 
-/* ── roles & permissions ───────────────────────────────────────────────── */
-
 export const SUPER_ADMIN_CODE = "super_admin" as const;
 
-/** Role as embedded in /auth/me. */
 export interface RoleRef {
   id: number;
   code: string;
@@ -52,7 +40,6 @@ export interface RoleRef {
   is_system: boolean;
 }
 
-/** Role as embedded in an admin-user list row — no `name_en`, no `is_system`. */
 export interface AdminUserRoleRef {
   id: number;
   code: string;
@@ -67,7 +54,6 @@ export interface RoleListItem {
   description: string | null;
   is_system: boolean;
   user_count: number;
-  /** null = implicit all (super_admin holds zero grant rows by design). */
   permission_count: number | null;
 }
 
@@ -111,7 +97,6 @@ export interface RoleUpdatePayload {
   description: string;
 }
 
-/** Full replace, not a delta. */
 export interface RolePermissionsUpdatePayload {
   permissions: string[];
 }
@@ -120,8 +105,6 @@ export type PermissionsResponse = ApiData<PermissionDomainGroup[]>;
 export type RoleListResponse = ApiData<RoleListItem[]>;
 export type RoleDetailResponse = ApiData<RoleDetail>;
 export type RoleCreateResponse = ApiData<{ id: number }>;
-
-/* ── current admin ─────────────────────────────────────────────────────── */
 
 export interface MeData {
   id: number;
@@ -134,21 +117,13 @@ export interface MeData {
   created_at: string | null;
   role: RoleRef | null;
   is_super_admin: boolean;
-  /** Empty when is_super_admin — is_super_admin governs, not this list. */
   permissions: string[];
-  /**
-   * Mirrors the server's PERMISSION_ENFORCEMENT_MODE. Under "audit" the route
-   * guard warns and lets the render through instead of redirecting, so a
-   * mis-mapped route cannot hide a screen the API would have allowed.
-   */
   enforcement_mode?: EnforcementMode;
 }
 
 export type EnforcementMode = "audit" | "enforce";
 
 export type MeResponse = ApiData<MeData>;
-
-/* ── admin users ───────────────────────────────────────────────────────── */
 
 export interface AdminUserListItem {
   id: number;
@@ -179,7 +154,6 @@ export interface AdminUserCreatePayload {
   is_active: boolean;
 }
 
-/** profile_image is absent by design — it moves through its own upload endpoint. */
 export interface AdminUserUpdatePayload {
   username: string;
   first_name: string;
@@ -197,10 +171,6 @@ export interface AdminUserPasswordPayload {
 
 export type AdminUserListResponse = ApiData<Paginated<AdminUserListItem>>;
 
-/* ── activity log ──────────────────────────────────────────────────────── */
-
-// "audit_allowed": a permission check failed but the request still ran
-// because the API was in audit mode (never the case in production).
 export type ActivityOutcome = "success" | "denied" | "audit_allowed";
 
 export interface ActivityItem {
@@ -210,7 +180,6 @@ export interface ActivityItem {
   admin_username: string;
   action_key: string;
   domain: string;
-  /** Rendered at read time from action_key + target_label; never persisted. */
   message_az: string;
   message_en: string;
   target_type: string | null;
@@ -243,9 +212,7 @@ export interface ActivityListQuery {
   domain?: string;
   action_key?: string;
   outcome?: ActivityOutcome;
-  /** YYYY-MM-DD */
   date_from?: string;
-  /** YYYY-MM-DD */
   date_to?: string;
   q?: string;
   lang?: Lang;
@@ -278,13 +245,6 @@ export interface ActivityFilters {
 export type ActivityListResponse = ApiData<Paginated<ActivityItem>>;
 export type ActivityFiltersResponse = ApiData<ActivityFilters>;
 
-/* ── client-side permission helpers ────────────────────────────────────── */
-
-/**
- * Mirror of the server's DOMAIN_LABELS. GET /api/permissions carries the same
- * labels but requires `roles.read`, so a screen every admin must reach (their
- * own profile) cannot depend on it. An unknown domain falls back to its key.
- */
 export const PERMISSION_DOMAIN_LABELS_AZ: Record<string, string> = {
   news: "Xəbərlər",
   news_categories: "Xəbər kateqoriyaları",
@@ -313,7 +273,6 @@ export interface PermissionKeyGroup {
   keys: string[];
 }
 
-/** Groups raw permission keys by their `domain.action` prefix, matrix order. */
 export function groupPermissionKeys(keys: string[]): PermissionKeyGroup[] {
   const order = Object.keys(PERMISSION_DOMAIN_LABELS_AZ);
   const byDomain = new Map<string, string[]>();
@@ -338,7 +297,6 @@ export function groupPermissionKeys(keys: string[]): PermissionKeyGroup[] {
     }));
 }
 
-/** Mirrors the server: super admin short-circuits, never consults the list. */
 export function hasPermission(me: MeData | null, key: string): boolean {
   if (!me || !me.is_active) return false;
   if (me.is_super_admin) return true;

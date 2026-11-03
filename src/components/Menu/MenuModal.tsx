@@ -12,9 +12,6 @@ interface Props {
 }
 
 export default function MenuModal({ title, onClose, onSubmit, loading, submitLabel = "Yadda saxla", children }: Props) {
-  // Portalled to the body: a transformed ancestor (hover:scale card, blurred
-  // panel, animated page wrapper) would otherwise become the containing block
-  // for this fixed overlay and push it out of the viewport.
   return createPortal(
     <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">

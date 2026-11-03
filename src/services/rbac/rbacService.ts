@@ -39,7 +39,6 @@ const rbacService = {
     return response.data;
   },
 
-  /** Full replace of the grant set, not a delta. */
   updateRolePermissions: async (
     roleId: number,
     payload: RolePermissionsUpdatePayload

@@ -40,11 +40,6 @@ export default function RolesPage() {
 
   useEffect(load, []);
 
-  /**
-   * Invariant R6 lives on the server, but a role with users attached needs a
-   * destination before the request is worth making — so the reassignment target
-   * is collected here and sent as `reassign_to_role_id`.
-   */
   const handleDelete = async (role: RoleListItem) => {
     if (role.is_system) {
       await Swal.fire({
@@ -60,8 +55,6 @@ export default function RolesPage() {
     if (role.user_count > 0) {
       const targets = roles.filter((item) => item.id !== role.id);
       const { value, isConfirmed } = await Swal.fire({
-        // Text-only options: SweetAlert2 renders title/html (and select labels)
-        // as HTML, and role names are editable.
         titleText: `"${role.name_az}" rolunu sil`,
         text: `Bu rola ${role.user_count} istifadəçi bağlıdır. Onlar hansı rola keçirilsin?`,
         icon: "warning",

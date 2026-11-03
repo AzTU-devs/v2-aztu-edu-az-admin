@@ -12,7 +12,6 @@ export interface RoleFormValues {
 interface RoleFormProps {
   values: RoleFormValues;
   onChange: (values: RoleFormValues) => void;
-  /** `code` is the programmatic identity the backend matches on — never editable after creation. */
   codeLocked?: boolean;
   isSystem?: boolean;
   disabled?: boolean;

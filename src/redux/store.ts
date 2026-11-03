@@ -1,8 +1,6 @@
 import authReducer from "./slices/authSlice";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
-// Discard the previous persisted session, including any browser-readable access token.
-// Authentication now lives only in memory; the HttpOnly cookie restores a session.
 try { window.localStorage.removeItem("persist:root"); } catch { /* Storage may be disabled. */ }
 
 const rootReducer = combineReducers({ auth: authReducer });

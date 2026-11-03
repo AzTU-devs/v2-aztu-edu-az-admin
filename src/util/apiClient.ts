@@ -21,9 +21,6 @@ apiClient.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // The API defaults to English when no language is asked for, so list
-        // endpoints returned null titles for records only authored in Azerbaijani.
-        // This dashboard is Azerbaijani, so ask for it explicitly.
         if (!config.headers["Accept-Language"]) {
             config.headers["Accept-Language"] = "az";
         }
@@ -44,16 +41,10 @@ export type PermissionDeniedDetail = {
     path: string;
 };
 
-/**
- * A 403 means the session is valid but the permission is not held. Refreshing
- * the token cannot change that, so this path never retries — it just tells the
- * UI, which surfaces a toast and leaves the current view alone.
- */
 const emitPermissionDenied = (detail: PermissionDeniedDetail) => {
     window.dispatchEvent(new CustomEvent(PERMISSION_DENIED_EVENT, { detail }));
 };
 
-/** Fetches the live permission set. Called on the refresh path so a role change lands. */
 export const fetchMe = async (): Promise<MeData | null> => {
     try {
         const response = await apiClient.get('/api/auth/me');
@@ -68,7 +59,6 @@ export const fetchMe = async (): Promise<MeData | null> => {
 
 let refreshInFlight: Promise<string> | undefined;
 
-/** One refresh operation avoids rotation races between concurrent API requests. */
 export function refreshAccessToken(): Promise<string> {
     if (!refreshInFlight) {
         refreshInFlight = apiClient.post('/api/auth/refresh', {}, { withCredentials: true })
@@ -95,8 +85,6 @@ apiClient.interceptors.response.use(
             originalRequest.url?.includes('/auth/me') ||
             originalRequest.url?.includes('/auth/mfa/confirm');
 
-        // A 403 from /auth/login means "account deactivated", which SignInForm
-        // reports itself — only real permission denials are broadcast.
         if (error.response?.status === 403 && !isAuthEndpoint) {
             const body = error.response.data as Partial<PermissionDeniedError> | undefined;
             emitPermissionDenied({

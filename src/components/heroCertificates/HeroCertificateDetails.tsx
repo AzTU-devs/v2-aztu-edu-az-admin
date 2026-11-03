@@ -96,9 +96,6 @@ function HeroCertificateEditForm({ certificate, navigate }: EditFormProps) {
 
     // Section 2 — details. A record saved before the issuer column existed comes
     // back without the key, and that has always meant QS.
-    // Keep whatever issuer the row actually has; collapsing anything
-    // unrecognised to "qs" would silently rewrite a GreenMetric or STAR
-    // Register record the first time somebody opened it.
     const [issuer, setIssuer] = useState<string>(certificate.issuer || "qs");
     const [rankLabel, setRankLabel] = useState(certificate.rank_label ?? "");
     const [family, setFamily] = useState(certificate.family ?? "");
@@ -125,10 +122,6 @@ function HeroCertificateEditForm({ certificate, navigate }: EditFormProps) {
         keepsStoredDocument ||
         externalUrl.trim() !== "";
 
-    // Ranking bodies (QS, GreenMetric) state a position; accreditors and
-    // registers (AQAS, STAR Register) do not. The test is now "does this issuer
-    // rank?" rather than "is it AQAS?", so a new accreditor gets the right form
-    // instead of silently being offered rank fields.
     const takesRank = issuerTakesRank(issuer);
     const needsFamily = issuerNeedsFamily(issuer);
     const isAqas = !takesRank;

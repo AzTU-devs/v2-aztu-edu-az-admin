@@ -52,11 +52,6 @@ interface ActivityTableProps {
   pageSize?: number;
 }
 
-/**
- * `message_az` is rendered server side from the action key plus the target label,
- * so the row reads as a sentence. The raw `meta` stays behind the expander — it is
- * a whitelisted field snapshot, never a request body.
- */
 export default function ActivityTable({
   items,
   loading = false,

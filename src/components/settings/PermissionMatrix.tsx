@@ -9,11 +9,6 @@ interface PermissionMatrixProps {
   domains: PermissionDomainGroup[];
   selected: string[];
   onChange: (keys: string[]) => void;
-  /**
-   * super_admin. It holds zero grant rows by design and the server answers 409
-   * to any edit (invariant R2), so the matrix renders all-checked and read-only
-   * — the refusal is stated here rather than arriving as a surprise error.
-   */
   lockedAll?: boolean;
   disabled?: boolean;
 }

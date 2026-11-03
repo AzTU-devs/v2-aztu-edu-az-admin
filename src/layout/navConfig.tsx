@@ -24,19 +24,12 @@ import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { GridIcon } from "../icons";
 import { permissionForPath } from "../config/routePermissions";
 
-/**
- * `permission` is optional everywhere. When omitted, the entry inherits the
- * requirement its `path` carries in `routePermissions` — the same map the route
- * guard consults, so the sidebar can never advertise a screen that /403s.
- * A string array means "any of".
- */
 export type NavSubItem = {
   name: string;
   path: string;
   permission?: string | string[];
 };
 
-/** Live counters the sidebar can show next to an entry (see AppSidebar). */
 export type NavBadgeKey = "contactUnread";
 
 export type NavItem = {
@@ -253,12 +246,6 @@ export const navGroups: NavGroup[] = [
     label: "Tədqiqat",
     items: [
       {
-        /*
-          The section's editorial pages, listed exactly like "Haqqımızda" above:
-          one entry per screen, hand-listed rather than fetched. The entries
-          below it manage entities (institutes, labs, projects), which is why
-          this one is kept separate rather than folded in with them.
-        */
         icon: <ArticleIcon />,
         name: "Tədqiqat",
         subItems: [
@@ -309,14 +296,6 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    /*
-      Header and quick are listed: both have admin readers that return row ids
-      and every translation, so an editor can actually save against them.
-
-      Footer and shared stay unlisted — they still read the public
-      `/api/menu/footer` payload, which resolves a single language and carries
-      no ids. They join the list when they get admin readers of their own.
-    */
     label: "Naviqasiya",
     items: [
       {
@@ -330,11 +309,6 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    /*
-      Messages sent through the website's contact form. Gated on its own key,
-      like the chat group below: the inbox holds visitors' names, e-mail
-      addresses and words. The badge is the unread count.
-    */
     label: "Müraciətlər",
     permission: "contact_messages.read",
     items: [
@@ -363,11 +337,6 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    /*
-      The whole group disappears for an account holding none of the three keys,
-      rather than showing a heading over an empty list. Each child still carries
-      its own key so a viewer granted only `activity.read` sees the log alone.
-    */
     label: "Parametrlər",
     permission: ["roles.read", "admin_users.read", "activity.read"],
     items: [
@@ -392,19 +361,9 @@ export const navGroups: NavGroup[] = [
   },
 ];
 
-/**
- * A nav entry is active for its own URL and for anything nested under it, so
- * detail routes such as `/news/12` keep their parent highlighted. The root
- * entry is the exception — it only ever matches itself.
- */
 export const isPathActive = (pathname: string, path: string): boolean =>
   path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`);
 
-/**
- * Stable identity for an item — its own path, else its name. Deliberately blind
- * to `subItems`, because filtering the tree clones items with a trimmed child
- * list and the clone has to keep answering to the same key as the original.
- */
 export const navItemKey = (item: NavItem): string => item.path ?? item.name;
 
 export type NavMatch = {
@@ -413,15 +372,6 @@ export type NavMatch = {
   subItem?: NavSubItem;
 };
 
-/**
- * Resolves a pathname to the single deepest nav entry that owns it. The longest
- * matching path wins, so `/news/new` picks "Yeni xəbər" rather than "Xəbərlər".
- * Returns null for routes that are reachable but not in the menu (e.g. /profile).
- *
- * Takes the groups to search rather than closing over `navGroups`, so callers
- * can pass the permission-filtered tree. Header breadcrumbs would otherwise name
- * sections the sidebar deliberately hides.
- */
 export const findNavMatch = (
   pathname: string,
   groups: NavGroup[] = navGroups
@@ -447,15 +397,9 @@ export const findNavMatch = (
   return match;
 };
 
-/** Case/diacritic-insensitive contains, so "fakulte" finds "Fakültələr". */
 const normalize = (value: string) =>
   value.toLocaleLowerCase("az").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-/**
- * Filters the tree for the sidebar search box. A group is kept when its label
- * matches, an item when its own name matches (children kept intact), otherwise
- * only the children that match survive.
- */
 export const filterNavGroups = (groups: NavGroup[], query: string): NavGroup[] => {
   const needle = normalize(query.trim());
   if (!needle) return groups;
@@ -483,15 +427,6 @@ export const filterNavGroups = (groups: NavGroup[], query: string): NavGroup[] =
     .filter((group) => group.items.length > 0);
 };
 
-/**
- * Hides what the current session may not open. An entry's requirement is its own
- * `permission`, else the one its `path` carries in `routePermissions`. A parent
- * with subItems is kept when any child survives, so a partially-granted domain
- * still shows the pages it does allow.
- *
- * Clones with `{ ...item, subItems }` exactly as `filterNavGroups` does — clones
- * keep the same `navItemKey`, which is what active-state highlighting compares.
- */
 export const filterNavByPermission = (
   groups: NavGroup[],
   can: (permission: string | string[] | undefined) => boolean

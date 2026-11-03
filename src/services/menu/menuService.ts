@@ -108,12 +108,10 @@ export interface AdminContact {
 // --- QUICK MENU ---
 export interface AdminQuickLeftItem {
   id: number;
-  /** Shared fallback, used when a language has no link of its own. */
   url: string;
   display_order: number;
   is_active?: boolean;
   label: BiLang;
-  /** Per-language link. The az and en sites use different paths. */
   url_tr?: BiLang;
 }
 
@@ -685,14 +683,6 @@ export interface AdminQuickMenuData {
   sections: AdminQuickSection[];
 }
 
-/**
- * The editor reads `/quick/admin`, not the public `/quick`.
- *
- * The public payload resolves a single language and carries no row ids, so it
- * cannot be saved against — which is why this editor was unreachable from the
- * sidebar until now. The admin reader returns both translations, both per-language
- * links, the ids and the inactive rows.
- */
 export const getAdminQuickMenu = async (): Promise<AdminQuickMenuData | "ERROR"> => {
   try {
     const res = await apiClient.get("/api/menu/quick/admin");

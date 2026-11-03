@@ -39,10 +39,7 @@ interface CafedraFormShellProps {
   initialValue?: CafedraDetail | null;
   onSubmit: (payload: CreateCafedraPayload) => Promise<{ status: string; cafedra?: CafedraDetail }>;
   submitLabel: string;
-  /** Edit mode manages people, laboratories and the scientific area through
-   *  per-item endpoints, so those keys are omitted from the bulk payload. */
   isEdit?: boolean;
-  /** Refetch hook so per-item panels can refresh the cafedra. */
   onChanged?: () => void;
 }
 
@@ -193,9 +190,6 @@ export default function CafedraFormShell({
       director: useDirector ? payload.director ?? blankDirector() : null,
     });
 
-    // Edit mode: these lists are managed incrementally via their own endpoints,
-    // so never send them through the bulk update — it would delete & recreate
-    // every row, orphaning ids and uploaded images.
     if (isEdit) {
       delete payloadToSend.deputy_deans;
       delete payloadToSend.scientific_council;
@@ -209,8 +203,6 @@ export default function CafedraFormShell({
     const result = await onSubmit(payloadToSend);
 
     if (result.status === "SUCCESS") {
-      // The create endpoint returns the full cafedra (with sub-entity ids) so
-      // freshly added rows can get their images uploaded; update does not.
       const savedCafedra = result.cafedra;
 
       const imageErrors: string[] = [];
@@ -221,8 +213,6 @@ export default function CafedraFormShell({
       if (savedCafedra) {
         if (directorImage) track(await uploadCafedraDirectorImage(savedCafedra.cafedra_code, directorImage));
 
-        // The saved lists come back in submission order, so a row's uid maps to
-        // the saved entity at the same index.
         const uploadPersonnel = async (rows: any[], saved: any[] | undefined, map: Record<string, File>) => {
           for (let index = 0; index < rows.length; index += 1) {
             const file = map[rows[index].uid];

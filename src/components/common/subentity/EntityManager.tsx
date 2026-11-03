@@ -13,7 +13,6 @@ export type MutateResult = "SUCCESS" | "NOT FOUND" | "ERROR";
 export interface EntityFormHelpers {
   imageFile: File | null;
   setImageFile: (file: File | null) => void;
-  /** Bumped on every modal open — pass it to `RichTextField`'s `remountKey`. */
   editorKey: number;
 }
 
@@ -29,19 +28,16 @@ export interface EntityManagerProps<T, V> {
   toFormValue: (item: T) => V;
   emptyValue: () => V;
   renderForm: (value: V, onChange: (next: V) => void, helpers: EntityFormHelpers) => ReactNode;
-  /** Returns an error message, or null when the value may be submitted. */
   validate?: (value: V) => string | null;
   onCreate: (value: V) => Promise<CreateResult>;
   onUpdate: (id: number, value: V) => Promise<MutateResult>;
   onDelete: (id: number) => Promise<MutateResult>;
   onUploadImage?: (id: number, file: File) => Promise<unknown>;
-  /** When supplied, rows become drag-sortable and the new id order is sent. */
   onReorder?: (ids: number[]) => Promise<MutateResult>;
   onChanged: () => void;
   modalClassName?: string;
   emptyText?: string;
   addLabel?: string;
-  /** Rendered above the list — used for the publications year grouping. */
   header?: ReactNode;
 }
 
@@ -109,14 +105,9 @@ export default function EntityManager<T, V>({
   const [value, setValue] = useState<V>(() => emptyValue());
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  // `Editor` seeds initialContent once at mount; bump this on every open so the
-  // fields inside the modal remount against the row being edited.
   const [editorKey, setEditorKey] = useState(0);
   const [order, setOrder] = useState<number[]>(() => items.map(getId));
 
-  // Callers pass `items` as a freshly-mapped array on every render, so compare
-  // the id sequence rather than the array identity — otherwise this setState
-  // re-triggers itself forever.
   const idSignature = items.map(getId).join(",");
   useEffect(() => {
     setOrder(idSignature === "" ? [] : idSignature.split(",").map(Number));
@@ -174,9 +165,6 @@ export default function EntityManager<T, V>({
         targetId = res.id;
       }
 
-      // Upload the image after the row exists. Surface a real failure (e.g.
-      // unsupported format / too large) instead of silently reporting success.
-      // Upload services return either "SUCCESS" (string) or { status: "SUCCESS" }.
       let imageError: string | null = null;
       if (imageFile && onUploadImage) {
         const imgRes = await onUploadImage(targetId, imageFile);

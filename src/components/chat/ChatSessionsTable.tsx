@@ -10,7 +10,6 @@ interface ChatSessionsTableProps {
   loading?: boolean;
   pageSize?: number;
   onSelect: (sessionId: string) => void;
-  /** Omitted when the account lacks chat.delete — the column disappears with it. */
   onDelete?: (sessionId: string) => void;
   deletingId?: string | null;
 }
@@ -109,7 +108,6 @@ export default function ChatSessionsTable({
                       aria-label="Söhbəti sil"
                       disabled={deletingId === item.session_id}
                       onClick={(event) => {
-                        // The row itself opens the transcript.
                         event.stopPropagation();
                         onDelete(item.session_id);
                       }}

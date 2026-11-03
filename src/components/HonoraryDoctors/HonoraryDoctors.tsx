@@ -18,7 +18,6 @@ import {
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
-/** Stored paths are relative to the API host; absolute URLs pass through. */
 const imageUrl = (path?: string | null): string | undefined => {
     if (!path) return undefined;
     if (/^https?:\/\//i.test(path)) return path;

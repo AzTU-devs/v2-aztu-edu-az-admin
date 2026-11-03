@@ -82,8 +82,6 @@ export default function PersonnelTab({
 }: PersonnelTabProps) {
   const { payload, addListItem, removeListItem, updateListItem, updateTranslatedListItem } = api;
 
-  // Edit mode: rows are created/updated one at a time so ids and uploaded
-  // photos survive; the bulk arrays are omitted from the save payload.
   if (isEdit && cafedraCode) {
     return (
       <div className="space-y-5">

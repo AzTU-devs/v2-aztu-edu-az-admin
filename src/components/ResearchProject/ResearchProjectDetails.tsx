@@ -27,8 +27,6 @@ export default function ResearchProjectDetails() {
       .finally(() => setLoading(false));
   }, [project_code]);
 
-  // The form is mounted only once the data is in hand: the rich-text editor
-  // seeds itself from `initialContent` at mount and never re-reads it.
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">

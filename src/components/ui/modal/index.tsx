@@ -54,17 +54,6 @@ export const Modal: React.FC<ModalProps> = ({
     ? "w-full h-full"
     : "relative w-full rounded-3xl bg-white  dark:bg-gray-900";
 
-  /*
-    Rendered into document.body rather than in place.
-
-    `position: fixed` is only viewport-relative while no ancestor establishes a
-    containing block, and any ancestor with a transform, filter, backdrop-filter,
-    perspective or `contain` does exactly that. Admin pages are full of such
-    ancestors (hover:scale cards, backdrop-blur panels, and until recently the
-    page wrapper's own entrance animation), and each one silently dragged the
-    dialog out of the viewport. Portalling to the body puts the overlay outside
-    all of them, so it is centred no matter what the page above it does.
-  */
   return createPortal(
     /*
       The scroll container must NOT also be the centring flex container.

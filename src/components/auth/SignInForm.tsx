@@ -44,8 +44,6 @@ export default function SignInForm() {
         setVerificationCode("");
         return;
       }
-      // The token has to land in the store first — apiClient reads it from there
-      // to authorise the /auth/me call that follows.
       dispatch(loginSuccess({ token: data.access_token }));
 
       try {

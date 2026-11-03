@@ -1,26 +1,8 @@
 import apiClient from "../../util/apiClient";
 
-/**
- * Research section ("Tədqiqat") — its editorial pages.
- *
- * The same contract as the About section: the page saves as one document —
- * hero copy, the strategic-outlook text, the priority cards and the buttons in
- * a single PUT — which is why there is no per-row CRUD here. Publishing is its
- * own call so saving a draft can never put it live.
- *
- * Not to be confused with `researchInstitute` / `researchProject`, which manage
- * entities rather than pages.
- */
-
 export interface ResearchTranslation {
   title: string | null;
-  /** Rich text under the H1 in the hero. */
   description: string | null;
-  /**
-   * Rich text of the page's one intro card — the "Strateji baxış" block on the
-   * priorities page, the paragraph above the tables on the patents page, the
-   * "About the journal" text on a journal page.
-   */
   body_html: string | null;
   links_title: string | null;
   /** Journal page. */
@@ -30,7 +12,6 @@ export interface ResearchTranslation {
   button_label: string | null;
 }
 
-/** One numbered card in the priority grid. */
 export interface ResearchPriority {
   id: number;
   display_order: number;
@@ -38,19 +19,15 @@ export interface ResearchPriority {
   en: { title: string | null; description: string | null };
 }
 
-/** One row of a year's patent table. */
 export interface ResearchPatent {
   id: number;
-  /** Shown verbatim in every language: "İ 2024 0058", "WO2023242086". */
   patent_number: string | null;
-  /** An uploaded file's path or a pasted URL — the page treats them alike. */
   document_url: string | null;
   display_order: number;
   az: { name: string | null; authors: string | null };
   en: { name: string | null; authors: string | null };
 }
 
-/** One year heading with its own table under it. */
 export interface ResearchPatentYear {
   id: number;
   year: string | null;
@@ -77,7 +54,6 @@ export interface ResearchLink {
 export interface ResearchPageDetail {
   id: number;
   page_key: string;
-  /** Which form to show: priorities | patents. */
   template: string;
   slug_az: string | null;
   slug_en: string | null;
@@ -93,7 +69,6 @@ export interface ResearchPageDetail {
   az: ResearchTranslation;
   en: ResearchTranslation;
   priorities: ResearchPriority[];
-  /** Oldest year first — the same order the website is served. */
   patent_years: ResearchPatentYear[];
   /** Seminars & Trainings page. */
   seminars: ResearchSeminar[];
@@ -101,7 +76,6 @@ export interface ResearchPageDetail {
   updated_at: string | null;
 }
 
-/** Request body for the whole-page save. */
 export interface ResearchPagePayload {
   slug_az?: string;
   slug_en?: string;
@@ -148,8 +122,6 @@ export const getResearchPage = async (pageKey: string) => {
     if (response.data?.status_code === 200) {
       return response.data.page as ResearchPageDetail;
     }
-    // A 404 means the row was never seeded — a different problem from the API
-    // being unreachable, and the screen says so.
     return response.data?.status_code === 404 ? ("NOT FOUND" as const) : ("ERROR" as const);
   } catch (error: unknown) {
     const status = (error as { response?: { status?: number } })?.response?.status;
@@ -180,11 +152,6 @@ export const publishResearchPage = async (pageKey: string, isActive: boolean) =>
   }
 };
 
-/**
- * Stores a patent certificate and returns its path for the caller to put in the
- * form. It writes to no row on its own: patent rows are replaced on every save,
- * so the path has to be saved by the same PUT as the rest of the page.
- */
 export const uploadResearchDocument = async (pageKey: string, file: File) => {
   try {
     const body = new FormData();

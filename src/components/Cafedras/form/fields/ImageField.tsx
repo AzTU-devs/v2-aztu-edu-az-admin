@@ -11,12 +11,9 @@ export interface ExistingImage {
 
 interface ImageFieldProps {
   label?: string;
-  /** Single already-saved image (director / worker / laboratory cover). */
   imageUrl?: string | null;
-  /** Already-saved images that can be deleted individually (lab gallery). */
   existingImages?: ExistingImage[];
   onRemoveExisting?: (id: number) => void;
-  /** Files picked but not yet uploaded. */
   files?: File[];
   onSelect: (files: File[]) => void;
   onRemovePending?: (index: number) => void;
@@ -37,9 +34,6 @@ export default function ImageField({
   hint,
   disabled = false,
 }: ImageFieldProps) {
-  // Callers rebuild the `files` array on every render, so key the object URLs on
-  // the file contents instead — otherwise each render leaks a fresh blob URL and
-  // the <img> flickers.
   const signature = files.map((file) => `${file.name}:${file.size}:${file.lastModified}`).join("|");
   const previews = useMemo(
     () => files.map((file) => URL.createObjectURL(file)),

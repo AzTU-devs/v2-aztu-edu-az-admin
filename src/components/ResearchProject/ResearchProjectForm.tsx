@@ -24,7 +24,6 @@ interface ResearchProjectFormProps {
   submitLabel: string;
 }
 
-/** Short, single-line fields — the long ones get an editor instead. */
 const TEXT_FIELDS: {
   key: keyof Omit<ProjectTranslation, "name" | "about_html" | "project_type">;
   az: string;
@@ -46,11 +45,6 @@ const resolveImageUrl = (path?: string | null): string | undefined => {
     : `${base}/static/${clean}`;
 };
 
-/**
- * Declared at module scope on purpose: nesting it inside the form would give it
- * a new identity every render, remounting the file input and re-creating the
- * preview object URL on each keystroke elsewhere in the form.
- */
 function CoverField({
   currentImage,
   pendingFile,
@@ -121,8 +115,6 @@ export default function ResearchProjectForm({
   const [projectUrl, setProjectUrl] = useState(initialValue?.project_url ?? "");
   const [az, setAz] = useState<ProjectTranslation>(initialValue?.az ?? blankTranslation());
   const [en, setEn] = useState<ProjectTranslation>(initialValue?.en ?? blankTranslation());
-  // Held as a plain string list; blank rows are dropped on submit so an editor
-  // can add a slot and leave it empty without creating a nameless member.
   const [members, setMembers] = useState<string[]>(initialValue?.members ?? []);
 
   const setTranslation = (lang: Lang, key: keyof ProjectTranslation, value: string) => {
@@ -171,8 +163,6 @@ export default function ResearchProjectForm({
       return;
     }
 
-    // The cover rides a separate multipart request keyed by the project code,
-    // which only exists once the record itself has been saved.
     if (coverFile) {
       const upload = await uploadProjectImage(result.projectCode, coverFile);
       if (upload.status !== "SUCCESS") {
@@ -212,11 +202,6 @@ export default function ResearchProjectForm({
     </button>
   );
 
-  /**
-   * Both language panels stay mounted and one is hidden with CSS. The editor
-   * seeds itself from `initialContent` at mount only, so unmounting the inactive
-   * tab would blank it out the moment the user switched back.
-   */
   const renderLangPanel = (lang: Lang, value: ProjectTranslation) => (
     <div className={activeLang === lang ? "space-y-5" : "hidden"}>
       <div>

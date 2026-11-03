@@ -21,7 +21,6 @@ const parse = (value: string | null | undefined): Date | null => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
-/** 20 iyl 2026, 09:12 */
 export const formatDateTime = (value: string | null | undefined): string => {
   const date = parse(value);
   if (!date) return "—";
@@ -54,10 +53,6 @@ interface LastLoginCellProps {
   className?: string;
 }
 
-/**
- * "Son giriş". A never-signed-in account reads as an explicit state rather than
- * an empty cell — a dormant admin account is the thing worth noticing here.
- */
 export default function LastLoginCell({ value, className = "" }: LastLoginCellProps) {
   if (!value) {
     return (

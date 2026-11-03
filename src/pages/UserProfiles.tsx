@@ -15,7 +15,6 @@ import { setSession } from "../redux/slices/authSlice";
 import { getImageUrl } from "../util/imageUrl";
 import { groupPermissionKeys, type MeData } from "../types/rbac";
 
-/** Mirrors PASSWORD_MIN_LENGTH on the server. */
 const PASSWORD_MIN_LENGTH = 8;
 
 const EMPTY_FORM = {
@@ -100,9 +99,6 @@ export default function UserProfiles() {
     setLoading(true);
     setLoadError(null);
 
-    // Read fresh instead of off the persisted store: a role or permission change
-    // made elsewhere would otherwise show the admin a stale version of their own
-    // account. The same payload refreshes the session the rest of the app reads.
     authService
       .me()
       .then((data) => {

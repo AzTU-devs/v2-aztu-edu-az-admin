@@ -16,8 +16,6 @@ type SidebarContextType = {
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
-// The desktop shell starts at lg. Below it the sidebar is a drawer, above it a
-// rail — the header toggle and the layout grid branch on the same number.
 export const SIDEBAR_DESKTOP_BREAKPOINT = 1024;
 
 const COLLAPSE_STORAGE_KEY = "aztu-admin-sidebar";
@@ -59,8 +57,6 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  // The drawer owns the page while it is open — releasing the scroll lock is
-  // part of the same effect so an unmount can never leave the body stuck.
   useEffect(() => {
     if (!isMobileOpen) return;
 

@@ -28,7 +28,6 @@ export const EMPTY_ACTIVITY_FILTERS: ActivityFilterState = {
   q: "",
 };
 
-/** Blank fields are dropped rather than sent as "" — the API treats absent as "no filter". */
 export const toActivityQuery = (state: ActivityFilterState): ActivityListQuery => {
   const query: ActivityListQuery = {};
   if (state.admin_user_id) query.admin_user_id = Number(state.admin_user_id);
@@ -65,7 +64,6 @@ export default function ActivityFilters({
   const set = (field: keyof ActivityFilterState) => (next: string) =>
     onChange({ ...value, [field]: next });
 
-  /** Narrowing by domain first makes the ~123-key action list usable. */
   const actions = (options?.actions ?? []).filter(
     (action) => !value.domain || action.key.startsWith(`${value.domain}.`)
   );

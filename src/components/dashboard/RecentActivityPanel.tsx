@@ -6,7 +6,6 @@ import type { ActivityItem } from "../../types/rbac";
 interface Props {
   items?: ActivityItem[];
   loading?: boolean;
-  /** The server could not read the activity log at all (e.g. table not migrated). */
   unavailable?: boolean;
 }
 

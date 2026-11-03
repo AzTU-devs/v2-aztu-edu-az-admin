@@ -26,11 +26,6 @@ function MetaItem({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
-/**
- * A reply opens the admin's own mail client. The address passed the server's
- * strict e-mail rule, but its local part may still legally hold "?", "#" or
- * "%", which would break a mailto: URL — so that part is percent-encoded.
- */
 const replyHref = (message: ContactMessageDetail): string => {
   const at = message.email.lastIndexOf("@");
   const local = encodeURIComponent(message.email.slice(0, at));
@@ -51,8 +46,6 @@ export default function ContactMessageDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  // Opening a message marks it read, once — StrictMode runs effects twice in
-  // development, and every PATCH is an activity-log row.
   const autoMarked = useRef<number | null>(null);
 
   const load = useCallback(() => {

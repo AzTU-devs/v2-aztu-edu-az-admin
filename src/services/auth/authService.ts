@@ -43,17 +43,11 @@ const authService = {
     return response.data;
   },
 
-  /** Any authenticated admin may call this — no permission required. */
   me: async (): Promise<MeData> => {
     const response = await apiClient.get<MeResponse>('/api/auth/me');
     return response.data.data;
   },
 
-  /**
-   * Self-service — any authenticated admin, regardless of role. The server
-   * rotates the refresh cookie, so this call must carry credentials or the
-   * caller keeps a cookie that no longer matches the stored hash.
-   */
   changePassword: async (payload: ChangePasswordPayload): Promise<string> => {
     const response = await apiClient.post<ApiMessage>(
       '/api/auth/change-password',

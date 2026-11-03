@@ -3,8 +3,6 @@ import { useSidebar } from "../context/SidebarContext";
 const Backdrop: React.FC = () => {
   const { isMobileOpen, closeMobileSidebar } = useSidebar();
 
-  // Kept mounted and faded with pointer-events, rather than unmounted — a hard
-  // swap made the drawer look like it snapped rather than slid.
   return (
     <div
       onClick={closeMobileSidebar}

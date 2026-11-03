@@ -4,14 +4,6 @@ import contactMessageService, {
   CONTACT_INBOX_CHANGED_EVENT,
 } from "../../services/contact/contactMessageService";
 
-/**
- * Unread contact-form messages, for the sidebar badge.
- *
- * Asked for only when the account may read the inbox, and refreshed when this
- * tab changes the inbox (CONTACT_INBOX_CHANGED_EVENT) or becomes visible again
- * — new mail arrives rarely, so there is no polling. A failed request simply
- * hides the badge; the inbox page itself reports errors.
- */
 export default function useContactUnreadCount(): number {
   const { can } = usePermissions();
   const allowed = can("contact_messages.read");

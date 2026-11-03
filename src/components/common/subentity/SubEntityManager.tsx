@@ -22,7 +22,6 @@ interface SubEntityManagerProps<T> {
   onChanged: () => void;
 }
 
-/** People-shaped specialisation of `EntityManager`. */
 export default function SubEntityManager<T>({
   title,
   description,

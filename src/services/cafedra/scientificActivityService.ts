@@ -98,9 +98,6 @@ export const getScientificActivity = async (
     }
 };
 
-// Pairs AZ items with their EN twin by the stable row `id`. Never positional:
-// the two language arrays diverge the moment a row exists in only one language,
-// and index pairing then silently attaches the wrong translation.
 const mergeById = <A extends { id: number }, E extends { id: number }>(azArr: A[] = [], enArr: E[] = []) => {
     const en = new Map((enArr ?? []).map((e) => [e.id, e]));
     return (azArr ?? []).map((a) => ({ a, e: en.get(a.id) }));
@@ -132,7 +129,6 @@ const introsOf = (az: CafedraScientificActivity, en: CafedraScientificActivity):
     },
 });
 
-// The API returns one language per call, but the admin edits both at once.
 export const getScientificActivityBilingual = async (
     code: string
 ): Promise<ScientificActivityBilingual | "NOT FOUND" | "ERROR"> => {
@@ -185,8 +181,6 @@ export const getScientificActivityBilingual = async (
             })
         ),
         publication_years: az.sections.publications.years ?? [],
-        // Optional-chained: a backend that predates the patents section returns
-        // no key at all, and the form must still load rather than crash.
         patents: mergeById(az.sections.patents?.items ?? [], en.sections.patents?.items ?? []).map(
             ({ a, e }): PatentRowValue => ({
                 uid: uid(),
@@ -212,10 +206,6 @@ export const getScientificActivityBilingual = async (
         laboratories: az.sections.laboratories.items ?? [],
     };
 };
-
-// ============================================================
-// Per-item CRUD
-// ============================================================
 
 const _create = async (url: string, payload: unknown): Promise<CreateResult> => {
     try {
@@ -253,11 +243,9 @@ const _delete = async (url: string): Promise<MutateResult> => {
     }
 };
 
-// Intros
 export const updateScientificIntros = (cafedraCode: string, payload: ScientificIntrosPayload) =>
     _update(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/scientific-activity/intros`, payload);
 
-// Research areas
 export const createResearchArea = (cafedraCode: string, payload: ResearchAreaPayload) =>
     _create(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/research-areas`, payload);
 export const updateResearchArea = (itemId: number, payload: ResearchAreaPayload) =>
@@ -265,7 +253,6 @@ export const updateResearchArea = (itemId: number, payload: ResearchAreaPayload)
 export const deleteResearchArea = (itemId: number) =>
     _delete(`${CAFEDRA_ADMIN_BASE}/research-areas/${itemId}`);
 
-// Projects and grants
 export const createProject = (cafedraCode: string, payload: ProjectPayload) =>
     _create(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/projects`, payload);
 export const updateProject = (itemId: number, payload: ProjectPayload) =>
@@ -273,7 +260,6 @@ export const updateProject = (itemId: number, payload: ProjectPayload) =>
 export const deleteProject = (itemId: number) =>
     _delete(`${CAFEDRA_ADMIN_BASE}/projects/${itemId}`);
 
-// Partner companies (industry cooperation)
 export const createPartnerCompany = (cafedraCode: string, payload: PartnerCompanyPayload) =>
     _create(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/partner-companies`, payload);
 export const updatePartnerCompany = (itemId: number, payload: PartnerCompanyPayload) =>
@@ -294,7 +280,6 @@ export const uploadPartnerCompanyLogo = async (itemId: number, imageFile: File):
     }
 };
 
-// Publications
 export const createPublication = (cafedraCode: string, payload: PublicationPayload) =>
     _create(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/publications`, payload);
 export const updatePublication = (itemId: number, payload: PublicationPayload) =>
@@ -302,11 +287,9 @@ export const updatePublication = (itemId: number, payload: PublicationPayload) =
 export const deletePublication = (itemId: number) =>
     _delete(`${CAFEDRA_ADMIN_BASE}/publications/${itemId}`);
 
-// Reordering operates within a single year group; `ids` is that group in its new order.
 export const reorderPublications = (cafedraCode: string, ids: number[]) =>
     _update(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/publications/reorder`, { ids });
 
-// Patents
 export const createPatent = (cafedraCode: string, payload: PatentPayload) =>
     _create(`${CAFEDRA_ADMIN_BASE}/${cafedraCode}/patents`, payload);
 export const updatePatent = (itemId: number, payload: PatentPayload) =>

@@ -27,7 +27,6 @@ const PAGE_SIZE = 25;
 const headClass =
   "px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500";
 
-/** Existing accounts predate first_name/last_name — the username is the fallback. */
 const displayNameOf = (user: AdminUserListItem): string =>
   [user.first_name, user.last_name].filter(Boolean).join(" ") || user.username;
 
@@ -89,11 +88,6 @@ export default function AdminUsersPage() {
     }
   }, [can]);
 
-  /**
-   * Invariants R4/R5 are enforced server side inside the transaction; these are
-   * the same rules restated so the destructive control is simply absent rather
-   * than producing a 409 after a confirm dialog.
-   */
   const activeSuperAdmins = items.filter(
     (item) => item.role?.code === SUPER_ADMIN_CODE && item.is_active
   );
@@ -108,7 +102,6 @@ export default function AdminUsersPage() {
     successTitle: string
   ) => {
     const { isConfirmed } = await Swal.fire({
-      // titleText: these titles carry usernames; `title` would be parsed as HTML.
       titleText: confirm.title,
       text: confirm.text,
       icon: "warning",

@@ -31,14 +31,10 @@ const AppSidebar: React.FC = () => {
   const [query, setQuery] = useState("");
   const [collapsedItems, setCollapsedItems] = useState<string[]>([]);
 
-  // Labels, the filter box and the submenus are all gated on the same thing:
-  // is the rail showing its full width right now?
   const isOpen = isExpanded || isHovered || isMobileOpen;
 
   const visible = useNavGroups();
 
-  // Counters shown beside an entry. Only fetched for accounts that can open
-  // the entry, and hidden at zero.
   const badges: Record<NavBadgeKey, number> = {
     contactUnread: useContactUnreadCount(),
   };
@@ -49,21 +45,13 @@ const AppSidebar: React.FC = () => {
   );
   const groups = useMemo(() => filterNavGroups(visible, query), [visible, query]);
 
-  // Both filters hand back cloned items, so identity has to be compared by key,
-  // never by reference.
   const activeItemKey = match ? navItemKey(match.item) : null;
   const activeSubItemPath = match?.subItem?.path ?? null;
 
-  /**
-   * Submenus follow the route by default — the group owning the current page is
-   * open, everything else is closed. Clicking only records a deviation from
-   * that, keyed by path, so the state survives reordering the nav config.
-   */
   const isSubmenuOpen = (item: NavItem) => {
     const key = navItemKey(item);
     const openByRoute = activeItemKey === key;
     const isToggled = collapsedItems.includes(key);
-    // A filtered tree shows what it found, expanded.
     if (query.trim()) return true;
     return openByRoute ? !isToggled : isToggled;
   };
@@ -142,7 +130,6 @@ const AppSidebar: React.FC = () => {
                           {badges[nav.badgeKey] > 99 ? "99+" : badges[nav.badgeKey]}
                         </span>
                       ) : (
-                        // Collapsed rail: a dot on the icon instead of a number.
                         <span
                           aria-hidden="true"
                           className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand-500"

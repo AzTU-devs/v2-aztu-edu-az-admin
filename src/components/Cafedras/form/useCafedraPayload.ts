@@ -9,9 +9,6 @@ import {
   WorkingHour,
 } from "../../../services/cafedra/cafedraService";
 
-/** Every repeatable row carries a client-side uid so React keys and the pending
- *  File maps survive a delete in the middle of the list. It is stripped before
- *  the payload reaches the API. */
 export type WithUid<T> = T & { uid: string };
 
 export const newUid = () => crypto.randomUUID();
@@ -239,8 +236,6 @@ export const normalizeCafedraPayload = (value: any): CreateCafedraPayload => {
   };
 };
 
-/** `uid` is a client-side React key; the API rejects unknown keys on some
- *  nested schemas, so peel it off every row right before submitting. */
 export const stripUids = <T>(value: T): T => {
   if (Array.isArray(value)) return value.map((v) => stripUids(v)) as unknown as T;
   if (value && typeof value === "object") {
@@ -329,7 +324,6 @@ export function useCafedraPayload(initialValue: any) {
     []
   );
 
-  // ── Director ──────────────────────────────────────────────────────────────
   const changeDirectorField = useCallback((field: keyof DirectorPayload, value: string) => {
     setPayload((prev) => ({
       ...prev,
@@ -402,7 +396,6 @@ export function useCafedraPayload(initialValue: any) {
     []
   );
 
-  // ── Laboratories ──────────────────────────────────────────────────────────
   const updateLabField = useCallback(
     (uid: string, field: "room_number" | "email" | "phone_number", value: string) => {
       setPayload((prev) => ({

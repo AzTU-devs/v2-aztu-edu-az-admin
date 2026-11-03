@@ -1,5 +1,3 @@
-// F8: the dashboard's HTML sinks go through src/util/safeHtml.ts. This bundles
-// that exact module and runs it in a real browser DOM against XSS payloads.
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { chromium } from '@playwright/test';

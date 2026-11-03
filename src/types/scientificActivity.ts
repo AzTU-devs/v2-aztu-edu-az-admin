@@ -36,7 +36,6 @@ export interface PublicationsSection extends ScientificSection<PublicationItem> 
   years: PublicationYearBucket[];
 }
 
-/** Same year-bucketed shape as publications. */
 export interface PatentsSection extends ScientificSection<PatentItem> {
   years: PublicationYearBucket[];
 }

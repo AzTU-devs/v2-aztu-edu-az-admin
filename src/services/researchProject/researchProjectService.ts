@@ -1,13 +1,5 @@
 import apiClient from "../../util/apiClient";
 
-/**
- * One language's worth of project copy. `about_html` is rich text from the
- * Tiptap editor; the rest are short free-text fields.
- *
- * `budget` and `duration` are strings rather than numbers/dates on purpose —
- * real entries read "800000", "250 min manat", "yox" and "01 dekabr 2023-cü il
- * – 01 dekabr 2025-ci il".
- */
 export interface ProjectTranslation {
   name: string;
   project_type: string;
@@ -17,7 +9,6 @@ export interface ProjectTranslation {
   about_html: string;
 }
 
-/** Shape returned by `GET /admin/{code}` — both languages, for the edit form. */
 export interface ResearchProjectDetail {
   id: number;
   project_code: string;
@@ -30,7 +21,6 @@ export interface ResearchProjectDetail {
   updated_at?: string | null;
 }
 
-/** Request body for create/update. The API generates `project_code` itself. */
 export interface ResearchProjectPayload {
   image?: string | null;
   project_url?: string | null;
@@ -70,8 +60,6 @@ export const getProjects = async (start: number, end: number, lang: string = "az
       `${RESEARCH_PROJECT_BASE}/admin/all?start=${start}&end=${end}&lang=${lang}`
     );
 
-    // An empty list comes back as a real 204, which leaves axios with no body —
-    // so the status is checked before reaching into `data`.
     if (response.status === 204 || response.data?.status_code === 204) {
       return "NO CONTENT" as const;
     }
@@ -104,10 +92,6 @@ export const getProjectDetails = async (projectCode: string) => {
   }
 };
 
-/**
- * Create and update both resolve to the project_code, which is what the form
- * needs next: the cover image is uploaded in a second request keyed by it.
- */
 export const createProject = async (payload: ResearchProjectPayload) => {
   try {
     const response = await apiClient.post(`${RESEARCH_PROJECT_BASE}/create`, payload);

@@ -72,13 +72,7 @@ const YEAR_OPTIONS = Array.from({ length: CURRENT_YEAR + 1 - 2015 + 1 }, (_, i) 
 
 const uid = () => crypto.randomUUID();
 
-/**
- * Copying a URL that was displayed wrapped across lines carries the wrap points
- * in as whitespace, which silently saves a dead link. No valid URL contains any.
- */
 const cleanUrl = (value: string) => value.replace(/\s+/g, "");
-
-// ─── Collapsible panel ───────────────────────────────────────────────────────
 
 function Panel({
   title,
@@ -122,8 +116,6 @@ function Panel({
     </div>
   );
 }
-
-// ─── Intros ──────────────────────────────────────────────────────────────────
 
 function IntrosPanel({
   cafedraCode,
@@ -187,8 +179,6 @@ function IntrosPanel({
     </div>
   );
 }
-
-// ─── Publications ────────────────────────────────────────────────────────────
 
 const emptyPublication = (year: number | ""): PublicationRowValue => ({
   uid: uid(),
@@ -420,8 +410,6 @@ function PublicationsPanel({
   );
 }
 
-// ─── Patents ─────────────────────────────────────────────────────────────────
-
 const emptyPatent = (year: number | ""): PatentRowValue => ({
   uid: uid(),
   patent_number: "",
@@ -610,8 +598,6 @@ function PatentsPanel({
     </div>
   );
 }
-
-// ─── Tab ─────────────────────────────────────────────────────────────────────
 
 interface ScientificActivityTabProps {
   cafedraCode: string;

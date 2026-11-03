@@ -55,15 +55,9 @@ const initialState: AuthState = {
   is_super_admin: false,
   is_active: false,
   last_login_at: null,
-  // Deny missing permissions unless the authenticated server explicitly says otherwise.
   enforcement_mode: 'enforce',
 };
 
-/**
- * Copies only the keys the caller actually supplied. `loginSuccess({ token })`
- * used to null every other field, which would have wiped the session the first
- * time a token refresh landed.
- */
 const mergeUser = (state: AuthState, user: AuthUser | undefined) => {
   if (!user) return;
   if (user.name !== undefined) state.name = user.name;
@@ -88,12 +82,10 @@ const authSlice = createSlice({
       mergeUser(state, action.payload.user);
     },
 
-    /** A refresh only ever carries a new access token — everything else survives. */
     tokenRefreshed: (state: AuthState, action: PayloadAction<{ token: string }>) => {
       state.token = action.payload.token;
     },
 
-    /** Authoritative snapshot of GET /api/auth/me. Never touches the token. */
     setSession: (state: AuthState, action: PayloadAction<MeData>) => {
       const me = action.payload;
       state.user_id = me.id;

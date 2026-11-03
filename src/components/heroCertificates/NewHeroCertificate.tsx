@@ -57,10 +57,6 @@ export default function NewHeroCertificate() {
 
     const hasSource = image !== null || documentFile !== null || externalUrl.trim() !== "";
 
-    // Ranking bodies (QS, GreenMetric) state a position; accreditors and
-    // registers (AQAS, STAR Register) do not. The test is now "does this issuer
-    // rank?" rather than "is it AQAS?", so a new accreditor gets the right form
-    // instead of silently being offered rank fields.
     const takesRank = issuerTakesRank(issuer);
     const needsFamily = issuerNeedsFamily(issuer);
     const isAqas = !takesRank;
