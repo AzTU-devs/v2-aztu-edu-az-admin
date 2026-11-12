@@ -8,10 +8,11 @@ import {
     createHeroCertificate,
     CreateHeroCertificatePayload,
     FAMILY_OPTIONS,
-    ISSUER_OPTIONS,
+    issuerOption,
     issuerTakesRank,
     issuerNeedsFamily,
 } from "../../services/heroCertificate/heroCertificateService";
+import IssuerPicker from "./IssuerPicker";
 
 const selectClass =
     "block w-full text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500/40";
@@ -59,12 +60,14 @@ export default function NewHeroCertificate() {
 
     const takesRank = issuerTakesRank(issuer);
     const needsFamily = issuerNeedsFamily(issuer);
-    const isAqas = !takesRank;
+    const isAccreditation = !takesRank;
+    const selectedIssuer = issuerOption(issuer);
 
-    // Switching to AQAS does not just hide the two QS-only fields, it empties
-    // them: a rank typed before the switch would otherwise sit in state, be
-    // re-exposed by switching back, and — if any future code path stopped
-    // dropping them at submit time — reach the API on an AQAS record.
+    // Switching to an accreditation issuer does not just hide the two
+    // ranking-only fields, it empties them: a rank typed before the switch
+    // would otherwise sit in state, be re-exposed by switching back, and — if
+    // any future code path stopped dropping them at submit time — reach the
+    // API on an accreditation record.
     const changeIssuer = (next: string) => {
         setIssuer(next);
         if (!issuerTakesRank(next)) {
@@ -227,28 +230,21 @@ export default function NewHeroCertificate() {
                     <span className="ml-auto text-[11px] text-red-500 font-medium">Məcburi</span>
                 </div>
                 <div className="p-5 space-y-5">
-                    {isAqas && (
-                        <p className="text-xs rounded-lg bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400 px-3 py-2">
-                            Bu qurum akkreditasiya/qeydiyyat verir, reytinq deyil — buna görə
+                    <IssuerPicker value={issuer} onChange={changeIssuer} />
+
+                    {isAccreditation && (
+                        <p
+                            className="text-xs rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/60 text-gray-600 dark:text-gray-300 px-3 py-2"
+                            style={{ borderLeftColor: selectedIssuer.color }}
+                        >
+                            {selectedIssuer.label} akkreditasiya/qeydiyyat verir, reytinq deyil — buna görə
                             <span className="font-semibold"> reytinq göstəricisi</span> və
                             <span className="font-semibold"> kateqoriya</span> doldurulmur.
-                            Ana səhifədə əsas mətn kimi <span className="font-semibold">proqramın adı</span> göstərilir.
+                            Ana səhifədə əsas mətn kimi <span className="font-semibold">başlıq</span> (proqramın və ya akkreditasiyanın adı) göstərilir.
                         </p>
                     )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                        <div>
-                            <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">
-                                Sertifikatı verən
-                            </Label>
-                            <select className={selectClass} value={issuer} onChange={(e) => changeIssuer(e.target.value)}>
-                                {ISSUER_OPTIONS.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
 
                         {takesRank && (
                             <div>
@@ -263,10 +259,10 @@ export default function NewHeroCertificate() {
                             </div>
                         )}
 
-                        {needsFamily && (
+                        {takesRank && (
                             <div>
                                 <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">
-                                    Kateqoriya
+                                    {needsFamily ? "Kateqoriya" : "Kateqoriya (istəyə bağlı)"}
                                 </Label>
                                 <select className={selectClass} value={family} onChange={(e) => setFamily(e.target.value)}>
                                     <option value="">— Seçilməyib —</option>
@@ -299,10 +295,10 @@ export default function NewHeroCertificate() {
                 <div className="p-5 space-y-5">
                     <div>
                         <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">
-                            {isAqas ? "Proqramın adı" : "Başlıq"}
+                            {isAccreditation ? "Proqramın və ya akkreditasiyanın adı" : "Başlıq"}
                         </Label>
                         <Input
-                            placeholder={isAqas ? "Process Automation Engineering (MA)" : "QS Avropa 2026: Qərbi Asiya"}
+                            placeholder={selectedIssuer.placeholder.az}
                             value={azTitle}
                             onChange={(e) => setAzTitle(e.target.value)}
                         />
@@ -328,10 +324,10 @@ export default function NewHeroCertificate() {
                 <div className="p-5 space-y-5">
                     <div>
                         <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">
-                            {isAqas ? "Programme name" : "Title"}
+                            {isAccreditation ? "Programme or accreditation name" : "Title"}
                         </Label>
                         <Input
-                            placeholder={isAqas ? "Process Automation Engineering (MA)" : "QS Europe 2026: Western Asia"}
+                            placeholder={selectedIssuer.placeholder.en}
                             value={enTitle}
                             onChange={(e) => setEnTitle(e.target.value)}
                         />

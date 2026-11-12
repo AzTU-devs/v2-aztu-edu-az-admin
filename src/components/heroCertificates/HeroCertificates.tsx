@@ -23,7 +23,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import {
   HeroCertificate,
   FAMILY_OPTIONS,
-  ISSUER_OPTIONS,
+  issuerOption,
   getHeroCertificates,
   reorderHeroCertificate,
   activateHeroCertificate,
@@ -50,26 +50,6 @@ const FAMILY_BADGE_CLASSES: Record<string, string> = {
   subject: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
   other: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
 };
-
-const ISSUER_LABELS: Record<string, string> = ISSUER_OPTIONS.reduce(
-  (acc, option) => ({ ...acc, [option.value]: option.label }),
-  {} as Record<string, string>
-);
-
-// Amber reads as QS and teal as AQAS everywhere the two issuers appear,
-// including on the public hero — the list keeps that pairing.
-const ISSUER_BADGE_CLASSES: Record<string, string> = {
-  qs: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-  aqas: "bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400",
-};
-
-/**
- * A row written before the issuer column existed comes back without the key,
- * and that has always meant QS — so only an explicit "aqas" changes anything.
- */
-function resolveIssuer(certificate: HeroCertificate): string {
-  return certificate.issuer === "aqas" ? "aqas" : "qs";
-}
 
 const emDash = <span className="text-gray-400 dark:text-gray-600 italic">—</span>;
 
@@ -371,12 +351,16 @@ export default function HeroCertificates() {
                       <div style={{ width: "8%" }}>{renderPreview(certificate)}</div>
 
                       <div style={{ width: "8%" }}>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold tracking-wide ${ISSUER_BADGE_CLASSES[resolveIssuer(certificate)]}`}>
-                          {ISSUER_LABELS[resolveIssuer(certificate)]}
+                        <span
+                          title={issuerOption(certificate.issuer).fullName}
+                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold tracking-wide ${issuerOption(certificate.issuer).badge}`}
+                        >
+                          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: issuerOption(certificate.issuer).color }} />
+                          {issuerOption(certificate.issuer).label}
                         </span>
                       </div>
 
-                      {/* An AQAS row has no rank at all, so the chip is dropped rather than left empty. */}
+                      {/* An accreditation row has no rank at all, so the chip is dropped rather than left empty. */}
                       <div style={{ width: "8%" }}>
                         {certificate.rank_label ? (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-mono text-xs font-semibold">

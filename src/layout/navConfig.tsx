@@ -149,7 +149,8 @@ export const navGroups: NavGroup[] = [
       },
       {
         /*
-          The homepage hero's QS ranking certificates. The hero video itself
+          The ranking and accreditation certificates shown in the homepage hero
+          and on the QA page. The hero video itself
           (/hero) has no entry here and stays URL-reachable, like the other
           single-screen sections.
         */

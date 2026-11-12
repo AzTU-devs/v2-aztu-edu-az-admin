@@ -14,7 +14,7 @@ export default function NewHeroCertificatePage() {
             <PageBreadcrumb pageTitle="Yeni sertifikat" />
             <ComponentCard
                 title="Yeni sertifikat"
-                desc="Ana səhifədə göstərilən yeni QS sertifikatı əlavə edin"
+                desc="Ana səhifədə və KT səhifəsində göstərilən yeni sertifikat əlavə edin"
                 actions={
                     <Link
                         to="/hero-certificates"

@@ -12,16 +12,102 @@ export const FAMILY_OPTIONS: { value: HeroCertificateFamily; label: string }[] =
     { value: "other", label: "Digər" },
 ];
 
-export type HeroCertificateIssuer = "qs" | "aqas" | "greenmetric" | "staregister";
+export type HeroCertificateIssuer = "qs" | "the" | "greenmetric" | "tkta" | "aqas" | "asiin" | "staregister";
 
-export const ISSUER_OPTIONS: { value: HeroCertificateIssuer; label: string }[] = [
-    { value: "qs", label: "QS" },
-    { value: "aqas", label: "AQAS" },
-    { value: "greenmetric", label: "UI GreenMetric" },
-    { value: "staregister", label: "STAR Register" },
+export interface IssuerOption {
+    value: HeroCertificateIssuer;
+    label: string;
+    fullName: string;
+    kind: string;
+    ranks: boolean;
+    /** Same colour as on the website. */
+    color: string;
+    badge: string;
+    placeholder: { az: string; en: string };
+}
+
+const PROGRAMME_PLACEHOLDER = { az: "Process Automation Engineering (MA)", en: "Process Automation Engineering (MA)" };
+
+export const ISSUER_OPTIONS: IssuerOption[] = [
+    {
+        value: "qs",
+        label: "QS",
+        fullName: "QS World University Rankings",
+        kind: "Reytinq",
+        ranks: true,
+        color: "#f5821f",
+        badge: "bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400",
+        placeholder: { az: "QS Avropa 2026: Qərbi Asiya", en: "QS Europe 2026: Western Asia" },
+    },
+    {
+        value: "the",
+        label: "THE",
+        fullName: "Times Higher Education",
+        kind: "Reytinq",
+        ranks: true,
+        color: "#c45ae9",
+        badge: "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400",
+        placeholder: { az: "THE Dünya Universitet Reytinqi 2026", en: "THE World University Rankings 2026" },
+    },
+    {
+        value: "greenmetric",
+        label: "UI GreenMetric",
+        fullName: "UI GreenMetric World University Rankings",
+        kind: "Reytinq",
+        ranks: true,
+        color: "#45c46e",
+        badge: "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400",
+        placeholder: { az: "UI GreenMetric Dünya Universitet Reytinqi 2025", en: "UI GreenMetric World University Rankings 2025" },
+    },
+    {
+        value: "tkta",
+        label: "TKTA",
+        fullName: "Təhsildə Keyfiyyət Təminatı Agentliyi",
+        kind: "İnstitusional akkreditasiya",
+        ranks: false,
+        color: "#4f8dff",
+        badge: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+        placeholder: { az: "İnstitusional akkreditasiya", en: "Institutional accreditation" },
+    },
+    {
+        value: "aqas",
+        label: "AQAS",
+        fullName: "AQAS",
+        kind: "Proqram akkreditasiyası",
+        ranks: false,
+        color: "#3fb9c6",
+        badge: "bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400",
+        placeholder: PROGRAMME_PLACEHOLDER,
+    },
+    {
+        value: "asiin",
+        label: "ASIIN",
+        fullName: "ASIIN",
+        kind: "Proqram akkreditasiyası",
+        ranks: false,
+        color: "#f2c230",
+        badge: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400",
+        placeholder: PROGRAMME_PLACEHOLDER,
+    },
+    {
+        value: "staregister",
+        label: "STAR Register",
+        fullName: "STAR Register",
+        kind: "Akkreditasiya və qeydiyyat",
+        ranks: false,
+        color: "#a9b4c8",
+        badge: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+        placeholder: PROGRAMME_PLACEHOLDER,
+    },
 ];
 
-export const RANKING_ISSUERS: HeroCertificateIssuer[] = ["qs", "greenmetric"];
+/** A record saved before the issuer column existed comes back without it, and that has always meant QS. */
+export const issuerOption = (issuer?: string | null): IssuerOption =>
+    ISSUER_OPTIONS.find((option) => option.value === issuer) ?? ISSUER_OPTIONS[0];
+
+export const RANKING_ISSUERS: HeroCertificateIssuer[] = ISSUER_OPTIONS.filter((option) => option.ranks).map(
+    (option) => option.value
+);
 
 export const FAMILY_REQUIRED_ISSUERS: HeroCertificateIssuer[] = ["qs"];
 
@@ -81,9 +167,9 @@ export interface HeroCertificateDetail {
 
 export interface CreateHeroCertificatePayload {
     issuer: HeroCertificateIssuer | string;
-    /** Required by the API only when `issuer` is `"qs"`; ignored for AQAS. */
+    /** Required by the API for ranking issuers; ignored for accreditation issuers. */
     rank_label?: string;
-    /** Required by the API only when `issuer` is `"qs"`; ignored for AQAS. */
+    /** Required by the API for QS, optional for THE and UI GreenMetric, ignored otherwise. */
     family?: HeroCertificateFamily | string;
     issued_date?: string;
     external_url?: string;
@@ -129,9 +215,10 @@ const buildCertificateFormData = (payload: CreateHeroCertificatePayload) => {
     const formData = new FormData();
 
     formData.append("issuer", payload.issuer);
-    // `rank_label` / `family` belong to QS only, but they are still sent for an
-    // AQAS row — as "" — because the API reads a blank here as "not set" and
-    // clears the stored value, which is what flipping QS -> AQAS has to do.
+    // `rank_label` / `family` belong to ranking issuers only, but they are still
+    // sent for an accreditation row — as "" — because the API reads a blank here
+    // as "not set" and clears the stored value, which is what switching a
+    // ranking to an accreditation has to do.
     formData.append("rank_label", payload.rank_label ?? "");
     formData.append("family", payload.family ?? "");
     appendOptional(formData, "issued_date", payload.issued_date);

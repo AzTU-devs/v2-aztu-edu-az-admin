@@ -14,7 +14,7 @@ export default function HeroCertificatesPage() {
             <PageBreadcrumb pageTitle="Ana səhifə sertifikatları" />
             <ComponentCard
                 title="Ana səhifə sertifikatları"
-                desc="Ana səhifənin yuxarı hissəsində göstərilən QS reytinq sertifikatları"
+                desc="Ana səhifənin yuxarı hissəsində və KT səhifəsində göstərilən reytinq və akkreditasiya sertifikatları"
                 actions={
                     <Link
                         to="/hero-certificates/new"
